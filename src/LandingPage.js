@@ -15,14 +15,15 @@ const YELLOW  = '#F8C922';
 const MUTED   = '#5F6B73';
 
 /* ── StepItem ─────────────────────────────────────────────────────────── */
-function StepItem({ num, title, body, delay, numColor }) {
+function StepItem({ num, title, body, delay, numOpacity = 1 }) {
   return (
     <FadeInBoth delay={delay}>
       <div style={{ flex: '1 1 0', minWidth: 0 }}>
         <div style={{
           fontSize:      '3.5rem',
           fontWeight:    900,
-          color:         numColor || CYAN,
+          color:         'var(--vn-text)',
+          opacity:       numOpacity,
           lineHeight:    1,
           marginBottom:  14,
           letterSpacing: '-0.04em',
@@ -124,30 +125,65 @@ export default function LandingPage() {
         overflow:      'hidden',
       }}
     >
-      {/* Full-width, legible script Veniar watermark */}
+      {/* Animated ambient motif — speed-line sweeps + pulsing dot field */}
       <div
         aria-hidden="true"
         style={{
           position:      'absolute',
-          top:           isMobile ? '46%' : '45%',
-          left:          '50%',
-          width:         isMobile ? '105vw' : '116vw',
-          transform:     `translate(-50%, -50%) scaleX(${isMobile ? 1.02 : 0.96})`,
-          color:         '#FFF8EA',
-          opacity:       isMobile ? 0.07 : 0.09,
-          fontFamily:    "'Segoe Script', 'Brush Script MT', 'Snell Roundhand', cursive",
-          fontSize:      isMobile ? '29vw' : '31vw',
-          fontWeight:    600,
-          lineHeight:     0.9,
-          letterSpacing: '-0.04em',
-          textAlign:      'center',
-          whiteSpace:     'nowrap',
-          pointerEvents:  'none',
-          userSelect:     'none',
-          zIndex:         0,
+          inset:         0,
+          overflow:      'hidden',
+          pointerEvents: 'none',
+          userSelect:    'none',
+          zIndex:        0,
         }}
       >
-        Veniar
+        {[
+          { top: '14%',  color: CYAN,   dur: 11, delay: -2  },
+          { top: '30%',  color: LAGOON, dur: 14, delay: -7  },
+          { top: '48%',  color: YELLOW, dur: 9,  delay: -4  },
+          { top: '66%',  color: LAGOON, dur: 13, delay: -10 },
+          { top: '83%',  color: CYAN,   dur: 12, delay: -1  },
+        ].map((ln, i) => (
+          <div
+            key={i}
+            className="vn-hero-line"
+            style={{
+              position:        'absolute',
+              top:             ln.top,
+              left:            0,
+              width:           '100%',
+              height:          i % 2 === 0 ? 2 : 1,
+              background:      `linear-gradient(90deg, transparent 0%, ${ln.color} 46%, ${ln.color} 54%, transparent 100%)`,
+              opacity:         0,
+              animationDuration: `${ln.dur}s`,
+              animationDelay:    `${ln.delay}s`,
+            }}
+          />
+        ))}
+
+        {[
+          { top: '20%', left: '12%', size: 5, color: YELLOW, delay: 0    },
+          { top: '38%', left: '82%', size: 4, color: CYAN,   delay: -1.2 },
+          { top: '58%', left: '22%', size: 6, color: LAGOON, delay: -2.4 },
+          { top: '72%', left: '68%', size: 4, color: YELLOW, delay: -0.6 },
+          { top: '88%', left: '40%', size: 5, color: CYAN,   delay: -1.8 },
+        ].map((d, i) => (
+          <div
+            key={i}
+            className="vn-hero-dot"
+            style={{
+              position:          'absolute',
+              top:               d.top,
+              left:              d.left,
+              width:             d.size,
+              height:            d.size,
+              borderRadius:      '50%',
+              background:        d.color,
+              animationDuration: '3.2s',
+              animationDelay:    `${d.delay}s`,
+            }}
+          />
+        ))}
       </div>
 
       <div style={{ ...inner, width: '100%', position: 'relative', zIndex: 1 }}>
@@ -348,7 +384,7 @@ export default function LandingPage() {
             num="01"
             title="Shop with participating businesses"
             body={<>Visit local restaurants, cafés, shops, and service providers that participate in <em>Veniar</em>.</>}
-            numColor="#1692A2"
+            numOpacity={1}
             delay={0}
           />
 
@@ -368,7 +404,7 @@ export default function LandingPage() {
             num="02"
             title="Earn rewards on eligible purchases"
             body={<>Earn rewards based on participating business rules and eligible activity.</>}
-            numColor="#0E96CD"
+            numOpacity={0.76}
             delay={120}
           />
 
@@ -388,7 +424,7 @@ export default function LandingPage() {
             num="03"
             title="Redeem locally"
             body="Use eligible rewards at participating businesses in the Veniar Network."
-            numColor="#648D62"
+            numOpacity={0.52}
             delay={240}
           />
 
@@ -399,7 +435,7 @@ export default function LandingPage() {
             num="04"
             title="Discover where to go next"
             body="Find nearby businesses, view details, and plan your visit from the app."
-            numColor="#F2B84B"
+            numOpacity={0.28}
             delay={360}
           />
         </div>
