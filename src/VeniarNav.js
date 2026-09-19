@@ -80,7 +80,7 @@ export default function VeniarNav({ solidFromStart = false }) {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '0 24px',
-    background: scrolled ? 'var(--vn-nav-bg)' : 'transparent',
+    background: scrolled ? 'var(--vn-nav-bg)' : 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 100%)',
     backdropFilter: scrolled ? 'blur(12px)' : 'none',
     WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
     borderBottom: scrolled ? '1px solid var(--vn-nav-border)' : '1px solid transparent',
