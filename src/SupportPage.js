@@ -1,23 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
 
-const CYAN   = '#1692A2';
-const LAGOON = '#0E96CD';
-const PALM   = '#648D62';
-const YELLOW = '#F8C922';
+const CYAN = 'var(--rosso)';
+const LAGOON = 'var(--rosso)';
+const PALM = 'var(--rosso)';
 const MUTED  = '#5F6B73';
 
 const BADGE_STYLES = [
-  { background: 'rgba(22,146,162,0.10)',  color: '#1692A2' },
-  { background: 'rgba(14,150,205,0.10)',  color: '#0E96CD' },
-  { background: 'rgba(237,168,27,0.12)',  color: '#EDA81B' },
-  { background: 'rgba(92,178,201,0.12)',  color: '#5CB2C9' },
-  { background: 'rgba(100,141,98,0.12)',  color: '#648D62' },
-  { background: 'rgba(214,96,36,0.10)',   color: '#D66024' },
+  { background: 'var(--vn-surface)',  color: 'var(--vn-text)' },
+  { background: 'var(--vn-surface)',  color: 'var(--vn-text)' },
+  { background: 'var(--vn-surface)',  color: 'var(--vn-text)' },
+  { background: 'var(--vn-surface)',  color: 'var(--vn-text)' },
+  { background: 'var(--vn-surface)',  color: 'var(--vn-text)' },
+  { background: 'var(--vn-surface)',   color: 'var(--vn-text)' },
 ];
 
 const CATEGORIES = [
@@ -74,8 +72,7 @@ const CATEGORIES = [
 export default function SupportPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
   const [openId, setOpenId] = useState(null);
 
   useEffect(() => {
@@ -171,7 +168,7 @@ export default function SupportPage() {
                 <div
                   key={cat.id}
                   style={{
-                    borderBottom: '1px solid rgba(255,248,234,0.10)',
+                    borderBottom: '1px solid var(--vn-surface)',
                     paddingBottom: '8px',
                     marginBottom: '4px',
                   }}
@@ -185,7 +182,7 @@ export default function SupportPage() {
                     style={{
                       ...s.triggerBtn,
                       background: isOpen
-                        ? 'rgba(22,146,162,0.07)'
+                        ? 'rgba(212,0,0,0.06)'
                         : 'var(--vn-bg, var(--rn-bg))',
                     }}
                   >
@@ -225,7 +222,7 @@ export default function SupportPage() {
             style={{
               background: 'var(--vn-panel, #F7E8CF)',
               borderTop: `3px solid ${PALM}`,
-              borderRadius: '16px',
+              borderRadius: 0,
               padding: isMobile ? '24px 20px' : '28px',
               marginTop: '56px',
               display: 'flex',
@@ -251,10 +248,10 @@ export default function SupportPage() {
 
 const s = {
   eyebrow: {
-    color: YELLOW,
+    color: 'var(--vn-text)',
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '4px',
+    letterSpacing: '0.24em',
     textTransform: 'uppercase',
     margin: '0 0 20px',
   },
@@ -262,14 +259,16 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '900',
     lineHeight: 1.06,
-    letterSpacing: '-0.03em',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontFamily: "'Archivo','Inter',sans-serif",
     margin: '0 0 24px',
   },
   goldBar: {
     width: '48px',
-    height: '3px',
-    background: YELLOW,
-    borderRadius: '2px',
+    height: '1px',
+    background: 'var(--vn-line, var(--vn-card-border))',
+    borderRadius: 0,
     marginBottom: '32px',
   },
   subtext: {
@@ -284,7 +283,7 @@ const s = {
     background: LAGOON,
     border: 'none',
     color: '#FFFFFF',
-    borderRadius: '9px',
+    borderRadius: 0,
     fontSize: '14px',
     fontWeight: '700',
     cursor: 'pointer',
@@ -299,7 +298,7 @@ const s = {
     background: 'transparent',
     border: `1.5px solid var(--vn-card-border, rgba(16,24,32,0.22))`,
     color: 'var(--vn-text, var(--rn-text))',
-    borderRadius: '9px',
+    borderRadius: 0,
     fontSize: '14px',
     fontWeight: '700',
     cursor: 'pointer',
@@ -323,7 +322,7 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontSize: '15px',
     fontWeight: '700',
-    letterSpacing: '-0.01em',
+    letterSpacing: '0.01em',
   },
   triggerIndicator: {
     color: CYAN,
@@ -346,7 +345,7 @@ const s = {
     fontSize: '17px',
     fontWeight: '800',
     margin: 0,
-    letterSpacing: '-0.02em',
+    letterSpacing: '0.02em',
   },
   cardDesc: {
     color: MUTED,

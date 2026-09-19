@@ -1,14 +1,12 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
 
-const CYAN   = '#1692A2';
-const LAGOON = '#0E96CD';
-const ORANGE = '#D66024';
-const YELLOW = '#F8C922';
+const CYAN = 'var(--rosso)';
+const LAGOON = 'var(--rosso)';
+const ORANGE = 'var(--rosso)';
 const MUTED  = '#5F6B73';
 
 const ROW_ACCENTS = [CYAN, LAGOON, ORANGE];
@@ -16,8 +14,7 @@ const ROW_ACCENTS = [CYAN, LAGOON, ORANGE];
 export default function ContactPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
 
   useEffect(() => {
     document.title = 'Contact — Veniar';
@@ -157,10 +154,10 @@ export default function ContactPage() {
 
 const s = {
   eyebrow: {
-    color: YELLOW,
+    color: 'var(--vn-text)',
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '4px',
+    letterSpacing: '0.24em',
     textTransform: 'uppercase',
     margin: '0 0 20px',
   },
@@ -168,14 +165,16 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '900',
     lineHeight: 1.06,
-    letterSpacing: '-0.03em',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontFamily: "'Archivo','Inter',sans-serif",
     margin: '0 0 24px',
   },
   goldBar: {
     width: '48px',
-    height: '3px',
-    background: YELLOW,
-    borderRadius: '2px',
+    height: '1px',
+    background: 'var(--vn-line, var(--vn-card-border))',
+    borderRadius: 0,
     marginBottom: '40px',
   },
   contactRow: {
@@ -203,7 +202,7 @@ const s = {
   },
   supportCard: {
     background: 'var(--vn-card, #FFFFFF)',
-    borderRadius: '16px',
+    borderRadius: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
@@ -213,7 +212,7 @@ const s = {
     fontSize: '16px',
     fontWeight: '800',
     margin: 0,
-    letterSpacing: '-0.02em',
+    letterSpacing: '0.02em',
   },
   cardDesc: {
     color: MUTED,
@@ -226,7 +225,7 @@ const s = {
     background: LAGOON,
     border: 'none',
     color: '#FFFFFF',
-    borderRadius: '9px',
+    borderRadius: 0,
     fontSize: '14px',
     fontWeight: '700',
     cursor: 'pointer',
