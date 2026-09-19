@@ -8,6 +8,14 @@
   --rosso-hover:  #A80000;
   --amber:        #E8B04A;
 
+  /* Softer, friendlier tones used on black/near-black surfaces instead of
+     the fully-saturated brand colors -- and a second hue (blue) so the
+     site isn't monochrome red. */
+  --rosso-soft:   #F0918C;
+  --blue:         #5AA9E6;
+  --blue-soft:    #9FCBEF;
+  --blue-hover:   #3D8FCC;
+
   /* Legacy names kept as aliases so every existing var(--vn-*) reference
      picks up the new palette without touching each call site. */
   --vn-rosso:        var(--rosso);
@@ -15,6 +23,11 @@
   --vn-amber:        var(--amber);
 
   --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -193,8 +206,13 @@ select:focus-visible,
 }
 .vn2-numeral-hover:hover .vn2-numeral,
 .vn2-numeral-filled {
-  -webkit-text-fill-color: var(--rosso);
-  -webkit-text-stroke-color: var(--rosso);
+  -webkit-text-fill-color: var(--rosso-soft);
+  -webkit-text-stroke-color: var(--rosso-soft);
+}
+.vn2-numeral-hover-blue:hover .vn2-numeral,
+.vn2-numeral-filled-blue {
+  -webkit-text-fill-color: var(--blue-soft);
+  -webkit-text-stroke-color: var(--blue-soft);
 }
 
 /* ── Fade-up on entry ─────────────────────────────────────────────────── */

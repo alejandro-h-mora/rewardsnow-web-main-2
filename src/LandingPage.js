@@ -13,6 +13,8 @@ import FadeUp from './ui/FadeUp';
 import Media from './ui/Media';
 import VENUES from './data/venues';
 
+const ACCENTS = ['var(--rosso-soft)', 'var(--blue-soft)'];
+
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -106,18 +108,43 @@ function PointsCard() {
   );
 }
 
-/* ── Network carousel card ───────────────────────────────────────────── */
-function VenueCard({ venue, isMobile, navigate }) {
+/* ── Network carousel card — honest "coming soon" placeholder ────────── */
+function VenueCard({ venue, index, isMobile, navigate }) {
+  const accent = ACCENTS[index % ACCENTS.length];
   return (
     <div style={{ width: isMobile ? '85vw' : 360 }}>
-      <div style={{ width: '100%', aspectRatio: '4 / 5', marginBottom: 20, background: 'var(--vn-surface)' }}>
-        <Media src={venue.image} alt={`${venue.name}, a participating business in ${venue.neighborhood}`} />
+      <div style={{
+        width: '100%',
+        aspectRatio: '4 / 5',
+        marginBottom: 20,
+        background: 'linear-gradient(135deg, var(--vn-surface) 0%, var(--vn-panel-strong, var(--vn-surface)) 100%)',
+        border: '1px solid var(--vn-line, var(--vn-card-border))',
+        borderTopWidth: 3,
+        borderTopColor: accent,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        textAlign: 'center',
+        padding: 24,
+      }}>
+        <span style={{ fontSize: 28, opacity: 0.35 }} aria-hidden="true">+</span>
+        <span style={{
+          fontSize: 12,
+          fontWeight: 700,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          color: 'var(--vn-text-muted)',
+        }}>
+          Coming soon
+        </span>
       </div>
       <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', color: 'var(--vn-text-sub)', textTransform: 'uppercase', marginBottom: 6 }}>
-        {venue.neighborhood}
+        {venue.category}
       </div>
-      <div className="vn-display" style={{ fontSize: '1.3rem', marginBottom: 10, letterSpacing: '0.02em' }}>
-        {venue.name}
+      <div className="vn-display" style={{ fontSize: '1.15rem', marginBottom: 10, letterSpacing: '0.02em' }}>
+        A local favorite, joining soon
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{
@@ -125,11 +152,11 @@ function VenueCard({ venue, isMobile, navigate }) {
           fontWeight: 700,
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          color: 'var(--vn-text-muted)',
-          border: '1px solid var(--vn-line, var(--vn-card-border))',
+          color: accent,
+          border: `1px solid ${accent}`,
           padding: '4px 10px',
         }}>
-          {venue.pointsPerVisit}
+          Not yet open
         </span>
         <button
           className="vn2-underline"
@@ -147,7 +174,7 @@ function VenueCard({ venue, isMobile, navigate }) {
             fontFamily: "'Inter', sans-serif",
           }}
         >
-          Discover
+          Learn more
         </button>
       </div>
     </div>
@@ -203,10 +230,10 @@ export default function LandingPage() {
             position: 'relative',
             zIndex: 1,
             width: '100%',
-            padding: isMobile ? '0 24px 88px' : '0 8% 96px',
+            padding: isMobile ? '0 24px 56px' : '0 8% 64px',
           }}>
             <FadeUp>
-              <p className="vn-eyebrow" style={{ color: '#FFF8EA', opacity: 0.85, marginBottom: 20 }}>
+              <p className="vn-eyebrow" style={{ color: '#FFF8EA', opacity: 0.85, marginBottom: 18 }}>
                 Local Rewards Network
               </p>
             </FadeUp>
@@ -215,9 +242,9 @@ export default function LandingPage() {
                 className="vn-display"
                 style={{
                   color: '#FFF8EA',
-                  fontSize: 'clamp(2.6rem, 9vw, 6.5rem)',
-                  maxWidth: 920,
-                  marginBottom: 28,
+                  fontSize: 'clamp(2.2rem, 6.5vw, 4.8rem)',
+                  maxWidth: 820,
+                  marginBottom: 24,
                 }}
               >
                 Earn rewards while supporting local businesses.
@@ -229,7 +256,7 @@ export default function LandingPage() {
                 color: 'rgba(255,248,234,0.75)',
                 lineHeight: 1.7,
                 maxWidth: '52ch',
-                marginBottom: 40,
+                marginBottom: 36,
               }}>
                 Veniar helps you earn rewards when you shop at participating independent
                 businesses in your community. Discover nearby restaurants, cafés, shops, and
@@ -281,7 +308,7 @@ export default function LandingPage() {
           }}>
             {VALUES.map((v, i) => (
               <FadeUp key={v.num} delay={i * 80}>
-                <div className="vn2-numeral-hover">
+                <div className={i % 2 === 0 ? 'vn2-numeral-hover' : 'vn2-numeral-hover-blue'}>
                   <Hairline style={{ marginBottom: 20 }} />
                   <Numeral size={64} style={{ display: 'block', marginBottom: 20 }}>{v.num}</Numeral>
                   <div className="vn-display" style={{ fontSize: '1.15rem', marginBottom: 12 }}>
@@ -308,11 +335,11 @@ export default function LandingPage() {
             <FadeUp>
               <Eyebrow style={{ marginBottom: 16 }}>The Network</Eyebrow>
               <SectionHeading id="network-heading" size="md" style={{ marginBottom: 20 }}>
-                Not sure where to use your rewards?
+                We're building the network.
               </SectionHeading>
               <p style={{ fontSize: 16, color: 'var(--vn-text-sub)', lineHeight: 1.75, maxWidth: 560 }}>
-                Browse restaurants, cafés, shops, and local services that are part of the Veniar
-                Network, then use maps and directions to plan your visit.
+                Restaurants, cafés, shops, and local services are joining Veniar soon. Check back
+                for the full directory, with maps and directions to plan your visit.
               </p>
             </FadeUp>
           </div>
@@ -322,8 +349,8 @@ export default function LandingPage() {
               <Carousel
                 ariaLabel="Participating venues"
                 items={VENUES}
-                renderItem={(venue) => (
-                  <VenueCard venue={venue} isMobile={isMobile} navigate={navigate} />
+                renderItem={(venue, index) => (
+                  <VenueCard venue={venue} index={index} isMobile={isMobile} navigate={navigate} />
                 )}
               />
             </FadeUp>

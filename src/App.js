@@ -57,9 +57,9 @@ function FloatingThemeToggle() {
         lineHeight: 1,
       }}
     >
-      <span style={{ color: isDark ? 'var(--rosso, #D40000)' : 'inherit', opacity: isDark ? 1 : 0.5 }}>DARK</span>
+      <span style={{ color: isDark ? 'var(--rosso-soft, #F0918C)' : 'inherit', opacity: isDark ? 1 : 0.5 }}>DARK</span>
       <span style={{ opacity: 0.35 }}> / </span>
-      <span style={{ color: !isDark ? 'var(--rosso, #D40000)' : 'inherit', opacity: !isDark ? 1 : 0.5 }}>LIGHT</span>
+      <span style={{ color: !isDark ? 'var(--blue-soft, #9FCBEF)' : 'inherit', opacity: !isDark ? 1 : 0.5 }}>LIGHT</span>
     </button>
   );
 }

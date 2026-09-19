@@ -15,13 +15,29 @@ export default function VeniarNav({ solidFromStart = false }) {
   const isMobile = useIsMobile();
 
   const [scrolled, setScrolled] = useState(solidFromStart);
+  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const closeButtonRef = useRef(null);
+  const lastScrollY = useRef(0);
 
-  // Header goes solid with a hairline border after 80px of scroll.
+  // Header goes solid with a hairline border after 80px of scroll, and
+  // tucks itself away while scrolling down, reappearing as soon as you
+  // scroll back up.
   useEffect(() => {
-    if (solidFromStart) return;
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    lastScrollY.current = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (!solidFromStart) setScrolled(y > 80);
+
+      if (y < 80) {
+        setHidden(false);
+      } else if (y > lastScrollY.current + 4) {
+        setHidden(true);
+      } else if (y < lastScrollY.current - 4) {
+        setHidden(false);
+      }
+      lastScrollY.current = y;
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -68,7 +84,8 @@ export default function VeniarNav({ solidFromStart = false }) {
     backdropFilter: scrolled ? 'blur(12px)' : 'none',
     WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
     borderBottom: scrolled ? '1px solid var(--vn-nav-border)' : '1px solid transparent',
-    transition: 'background-color 300ms var(--ease-cinematic), border-color 300ms var(--ease-cinematic)',
+    transform: hidden && !menuOpen ? 'translateY(-100%)' : 'translateY(0)',
+    transition: 'background-color 300ms var(--ease-cinematic), border-color 300ms var(--ease-cinematic), transform 350ms var(--ease-cinematic)',
   };
 
   const wordmarkStyle = {
@@ -93,7 +110,7 @@ export default function VeniarNav({ solidFromStart = false }) {
     fontWeight: 700,
     letterSpacing: '0.14em',
     textTransform: 'uppercase',
-    color: isActive(path) ? 'var(--rosso)' : 'var(--vn-text)',
+    color: isActive(path) ? 'var(--blue-soft)' : 'var(--vn-text)',
     cursor: 'pointer',
     fontFamily: "'Inter', sans-serif",
     whiteSpace: 'nowrap',
@@ -260,7 +277,7 @@ export default function VeniarNav({ solidFromStart = false }) {
                   fontWeight: 800,
                   textTransform: 'uppercase',
                   letterSpacing: '0.02em',
-                  color: isActive(item.path) ? 'var(--rosso)' : 'var(--vn-text)',
+                  color: isActive(item.path) ? 'var(--blue-soft)' : 'var(--vn-text)',
                 }}>
                   {item.label}
                 </span>
