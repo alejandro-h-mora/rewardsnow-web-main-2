@@ -3,18 +3,16 @@
 
 /* ── Veniar 2.0 — "cinematic luxury, neighborhood soul" static tokens ───── */
 :root {
-  /* Spec-named tokens (theme-independent accent) */
-  --rosso:        #D40000;
-  --rosso-hover:  #A80000;
-  --amber:        #E8B04A;
-
-  /* Softer, friendlier tones used on black/near-black surfaces instead of
-     the fully-saturated brand colors -- and a second hue (blue) so the
-     site isn't monochrome red. */
-  --rosso-soft:   #F0918C;
+  /* Primary accent -- kept the historical "rosso" name since it's used
+     everywhere (buttons, active states, focus rings, the business band),
+     but repointed to blue per request. */
   --blue:         #5AA9E6;
-  --blue-soft:    #9FCBEF;
   --blue-hover:   #3D8FCC;
+  --blue-soft:    #9FCBEF;
+  --rosso:        var(--blue);
+  --rosso-hover:  var(--blue-hover);
+  --rosso-soft:   var(--blue-soft);
+  --amber:        #E8B04A;
 
   /* Legacy names kept as aliases so every existing var(--vn-*) reference
      picks up the new palette without touching each call site. */

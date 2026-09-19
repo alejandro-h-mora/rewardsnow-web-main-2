@@ -382,7 +382,7 @@ export default function LandingPage() {
               balance and recent activity are always visible in the app.
             </p>
           </FadeUp>
-          <FadeUp delay={120} style={{ flex: '0 0 auto', width: '100%', display: 'flex', justifyContent: isMobile ? 'stretch' : 'flex-end' }}>
+          <FadeUp delay={120} style={{ flex: '0 0 auto', width: '100%', display: 'flex', justifyContent: isMobile ? 'stretch' : 'center' }}>
             <PointsCard />
           </FadeUp>
         </section>
