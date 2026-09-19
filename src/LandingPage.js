@@ -31,10 +31,12 @@ const BUSINESS_BENEFITS = [
   'Customer discovery, built in.',
 ];
 
+// Example activity only — no real transaction history yet, so these are
+// generic categories rather than invented business names.
 const RECENT_ACTIVITY = [
-  { label: "Marchetti's Table", detail: 'Dinner for two', pts: '+12 pts' },
-  { label: 'Corner Bloom Cafe', detail: 'Morning coffee', pts: '+3 pts' },
-  { label: 'Second Story Books', detail: 'Redeemed reward', pts: '−25 pts' },
+  { label: 'Local restaurant', detail: 'Dinner for two', pts: '+12 pts' },
+  { label: 'Neighborhood café', detail: 'Morning coffee', pts: '+3 pts' },
+  { label: 'Local bookstore', detail: 'Redeemed reward', pts: '−25 pts' },
 ];
 
 /* ── Points card, with a max-4deg pointer tilt ───────────────────────── */
