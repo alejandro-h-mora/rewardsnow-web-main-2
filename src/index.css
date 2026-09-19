@@ -186,27 +186,17 @@ code {
   100% { background-position: -200% 0; }
 }
 
-/* ── Hero motif — animated speed-line sweep (replaces static wordmark) ──── */
-.vn-hero-line {
-  animation-name: vnHeroSweep;
-  animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
-  animation-iteration-count: infinite;
-}
-@keyframes vnHeroSweep {
-  0%   { transform: translateX(-40%) scaleX(0.6); opacity: 0; }
-  12%  { opacity: 1; }
-  88%  { opacity: 1; }
-  100% { transform: translateX(40%) scaleX(0.6); opacity: 0; }
-}
-.vn-hero-dot {
-  animation-name: vnHeroDot;
+/* ── Hero motif — animated diagonal stripes (replaces static wordmark) ──── */
+.vn-hero-stripe {
+  animation-name: vnHeroStripe;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
-@keyframes vnHeroDot {
-  0%, 100% { opacity: 0.15; transform: scale(1); }
-  50%      { opacity: 0.9;  transform: scale(1.4); }
+@keyframes vnHeroStripe {
+  from { transform: translateX(-12vw) rotate(-14deg); }
+  to   { transform: translateX(12vw) rotate(-14deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vn-hero-line, .vn-hero-dot { animation: none !important; }
+  .vn-hero-stripe { animation: none !important; }
 }

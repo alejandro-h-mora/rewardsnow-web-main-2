@@ -15,15 +15,14 @@ const YELLOW  = '#F8C922';
 const MUTED   = '#5F6B73';
 
 /* ── StepItem ─────────────────────────────────────────────────────────── */
-function StepItem({ num, title, body, delay, numOpacity = 1 }) {
+function StepItem({ num, title, body, delay, numColor }) {
   return (
     <FadeInBoth delay={delay}>
       <div style={{ flex: '1 1 0', minWidth: 0 }}>
         <div style={{
           fontSize:      '3.5rem',
           fontWeight:    900,
-          color:         'var(--vn-text)',
-          opacity:       numOpacity,
+          color:         numColor || CYAN,
           lineHeight:    1,
           marginBottom:  14,
           letterSpacing: '-0.04em',
@@ -125,7 +124,7 @@ export default function LandingPage() {
         overflow:      'hidden',
       }}
     >
-      {/* Animated ambient motif — speed-line sweeps + pulsing dot field */}
+      {/* Animated diagonal stripes — replaces the old wordmark */}
       <div
         aria-hidden="true"
         style={{
@@ -138,49 +137,26 @@ export default function LandingPage() {
         }}
       >
         {[
-          { top: '14%',  color: CYAN,   dur: 11, delay: -2  },
-          { top: '30%',  color: LAGOON, dur: 14, delay: -7  },
-          { top: '48%',  color: YELLOW, dur: 9,  delay: -4  },
-          { top: '66%',  color: LAGOON, dur: 13, delay: -10 },
-          { top: '83%',  color: CYAN,   dur: 12, delay: -1  },
-        ].map((ln, i) => (
+          { left: '6%',  width: 5, color: CYAN,   dur: 7,   delay: 0    },
+          { left: '20%', width: 3, color: YELLOW, dur: 9,   delay: -2   },
+          { left: '35%', width: 6, color: LAGOON, dur: 8,   delay: -4   },
+          { left: '52%', width: 3, color: CYAN,   dur: 10,  delay: -1   },
+          { left: '68%', width: 5, color: YELLOW, dur: 7.5, delay: -3   },
+          { left: '84%', width: 4, color: LAGOON, dur: 9.5, delay: -5   },
+        ].map((st, i) => (
           <div
             key={i}
-            className="vn-hero-line"
-            style={{
-              position:        'absolute',
-              top:             ln.top,
-              left:            0,
-              width:           '100%',
-              height:          i % 2 === 0 ? 2 : 1,
-              background:      `linear-gradient(90deg, transparent 0%, ${ln.color} 46%, ${ln.color} 54%, transparent 100%)`,
-              opacity:         0,
-              animationDuration: `${ln.dur}s`,
-              animationDelay:    `${ln.delay}s`,
-            }}
-          />
-        ))}
-
-        {[
-          { top: '20%', left: '12%', size: 5, color: YELLOW, delay: 0    },
-          { top: '38%', left: '82%', size: 4, color: CYAN,   delay: -1.2 },
-          { top: '58%', left: '22%', size: 6, color: LAGOON, delay: -2.4 },
-          { top: '72%', left: '68%', size: 4, color: YELLOW, delay: -0.6 },
-          { top: '88%', left: '40%', size: 5, color: CYAN,   delay: -1.8 },
-        ].map((d, i) => (
-          <div
-            key={i}
-            className="vn-hero-dot"
+            className="vn-hero-stripe"
             style={{
               position:          'absolute',
-              top:               d.top,
-              left:              d.left,
-              width:             d.size,
-              height:            d.size,
-              borderRadius:      '50%',
-              background:        d.color,
-              animationDuration: '3.2s',
-              animationDelay:    `${d.delay}s`,
+              top:               '-50%',
+              left:              st.left,
+              width:             st.width,
+              height:            '220%',
+              background:        st.color,
+              opacity:           0.14,
+              animationDuration: `${st.dur}s`,
+              animationDelay:    `${st.delay}s`,
             }}
           />
         ))}
@@ -384,7 +360,7 @@ export default function LandingPage() {
             num="01"
             title="Shop with participating businesses"
             body={<>Visit local restaurants, cafés, shops, and service providers that participate in <em>Veniar</em>.</>}
-            numOpacity={1}
+            numColor="#1692A2"
             delay={0}
           />
 
@@ -404,7 +380,7 @@ export default function LandingPage() {
             num="02"
             title="Earn rewards on eligible purchases"
             body={<>Earn rewards based on participating business rules and eligible activity.</>}
-            numOpacity={0.76}
+            numColor="#0E96CD"
             delay={120}
           />
 
@@ -424,7 +400,7 @@ export default function LandingPage() {
             num="03"
             title="Redeem locally"
             body="Use eligible rewards at participating businesses in the Veniar Network."
-            numOpacity={0.52}
+            numColor="#648D62"
             delay={240}
           />
 
@@ -435,7 +411,7 @@ export default function LandingPage() {
             num="04"
             title="Discover where to go next"
             body="Find nearby businesses, view details, and plan your visit from the app."
-            numOpacity={0.28}
+            numColor="#F2B84B"
             delay={360}
           />
         </div>
