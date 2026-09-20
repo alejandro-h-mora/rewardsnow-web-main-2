@@ -58,13 +58,13 @@ function Register({ onRegister, onBack }) {
 
           {isMobile ? (
               <div style={s.mobileHeader}>
-                <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.4rem', color:'#1692A2', letterSpacing:'-0.03em', cursor:'pointer'}} onClick={() => navigate('/')}>Veniar</span>
+                <span style={s.wordmark} onClick={() => navigate('/')}>VENIAR</span>
                 <span style={s.mobileHeaderSub}>Create your free account</span>
               </div>
           ) : (
               <div style={s.leftPanel}>
                 <div style={s.leftContent}>
-                  <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.4rem', color:'#FFF8EA', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'20px'}} onClick={() => navigate('/')}>Veniar</span>
+                  <span style={{ ...s.wordmark, color: '#FFF8EA', display: 'block', marginBottom: '24px' }} onClick={() => navigate('/')}>VENIAR</span>
                   <div style={s.goldLine} />
                   <p style={s.tagline}>Join thousands earning rewards every day.</p>
                 </div>
@@ -75,7 +75,7 @@ function Register({ onRegister, onBack }) {
             ...s.rightPanel,
             width: isMobile ? '100%' : '520px',
             padding: isMobile ? '28px 24px 48px' : '48px 56px',
-            boxShadow: isMobile ? 'none' : '-8px 0 40px rgba(0,0,0,0.06)',
+            borderLeft: isMobile ? 'none' : '1px solid var(--vn-line, var(--vn-card-border))',
             flex: isMobile ? '1' : 'none',
           }}>
             <h1 style={{ ...s.brandName, fontSize: isMobile ? '1.6rem' : '2rem' }}>Create Account</h1>
@@ -153,23 +153,24 @@ const s = {
   wrapper: { display: 'flex', flex: 1 },
   mobileHeader: { background: 'var(--vn-bg, #FFF8EA)', padding: '28px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' },
   mobileHeaderSub: { color: 'var(--vn-text-sub)', fontSize: '13px', marginTop: '4px' },
-  leftPanel: { flex: 1, background: '#0A1211', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
+  wordmark: { fontFamily: "'Archivo', 'Inter', sans-serif", fontStretch: 'expanded', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.08em', color: 'var(--vn-text)', cursor: 'pointer' },
+  leftPanel: { flex: 1, background: '#0E0D0C', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
   leftContent: { position: 'relative', zIndex: 2 },
-  goldLine: { width: '48px', height: '3px', background: '#F2B84B', marginBottom: '32px', borderRadius: '2px' },
-  tagline: { color: '#FFF8EA', fontSize: '3.4rem', fontWeight: '900', lineHeight: 1.06, margin: '0 0 16px 0', maxWidth: '440px', letterSpacing: '-0.03em' },
-  rightPanel: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-card, #FFFFFF)', boxSizing: 'border-box', overflowY: 'auto' },
-  brandName: { color: 'var(--vn-text)', fontWeight: '900', margin: '0 0 8px 0', letterSpacing: '-0.03em' },
+  goldLine: { width: '48px', height: '1px', background: 'var(--vn-line, rgba(255,248,234,0.16))', marginBottom: '32px' },
+  tagline: { color: '#FFF8EA', fontSize: '2.8rem', fontWeight: 800, lineHeight: 1.06, margin: '0 0 16px 0', maxWidth: '460px', letterSpacing: '0.02em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
+  rightPanel: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-bg, #FFFFFF)', boxSizing: 'border-box', overflowY: 'auto' },
+  brandName: { color: 'var(--vn-text)', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '0.04em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
   brandSub: { color: 'var(--vn-text-sub)', fontSize: '1rem', margin: '0 0 24px 0' },
   row: { display: 'flex', gap: '12px' },
   half: { flex: 1, display: 'flex', flexDirection: 'column' },
   inputLabel: { color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', marginBottom: '7px', display: 'block', letterSpacing: '2px', textTransform: 'uppercase' },
-  input: { padding: '12px 16px', borderRadius: '10px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' },
-  registerBtn: { padding: '14px', borderRadius: '10px', border: 'none', background: '#0E96CD', color: '#ffffff', fontSize: '15px', fontWeight: '700', cursor: 'pointer', width: '100%', marginTop: '4px' },
-  backBtn: { padding: '14px', borderRadius: '12px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.18))', background: 'transparent', color: 'var(--vn-text)', fontSize: '14px', fontWeight: '600', cursor: 'pointer', width: '100%' },
+  input: { padding: '12px 16px', borderRadius: 0, border: '1px solid var(--vn-line, var(--vn-card-border))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' },
+  registerBtn: { padding: '14px', borderRadius: 0, border: 'none', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', width: '100%', marginTop: '4px' },
+  backBtn: { padding: '14px', borderRadius: 0, border: '1px solid var(--vn-line, var(--vn-card-border))', background: 'transparent', color: 'var(--vn-text)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', cursor: 'pointer', width: '100%' },
   divider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' },
-  dividerLine: { flex: 1, height: '1px', background: 'var(--vn-card-border, rgba(16,24,32,0.12))' },
+  dividerLine: { flex: 1, height: '1px', background: 'var(--vn-line, var(--vn-card-border))' },
   dividerText: { color: 'var(--vn-text-sub)', fontSize: '13px' },
-  error: { color: '#dc2626', fontSize: '13px', margin: '0 0 14px 0', background: '#fff0f0', padding: '10px 14px', borderRadius: '8px', border: '1px solid #ffd0d0' },
+  error: { color: '#dc2626', fontSize: '13px', margin: '0 0 14px 0', background: '#fff0f0', padding: '10px 14px', borderRadius: 0, border: '1px solid #ffd0d0' },
 };
 
 export default Register;

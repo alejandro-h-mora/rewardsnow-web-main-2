@@ -42,8 +42,8 @@ export function ForgotPassword() {
 
   return (
       <div style={s.root}>
-        <div style={{ ...s.card, padding: isMobile ? '32px 24px' : '48px', maxWidth: isMobile ? '100%' : '420px', borderRadius: isMobile ? '0' : '20px', minHeight: isMobile ? '100vh' : 'auto', boxShadow: isMobile ? 'none' : '0 24px 80px rgba(0,0,0,0.45)' }}>
-          <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.5rem', color:'#1692A2', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'12px'}} onClick={() => navigate('/')}>Veniar</span>
+        <div style={{ ...s.card, padding: isMobile ? '32px 24px' : '48px', maxWidth: isMobile ? '100%' : '420px', minHeight: isMobile ? '100vh' : 'auto' }}>
+          <span style={{ ...s.wordmark, display: 'block', marginBottom: '12px' }} onClick={() => navigate('/')}>VENIAR</span>
           <button style={s.backLink} onClick={() => navigate('/signin')}>← Back to sign in</button>
           {!sent ? (
               <>
@@ -112,8 +112,8 @@ export function ResetPassword() {
 
   return (
       <div style={s.root}>
-        <div style={{ ...s.card, padding: isMobile ? '32px 24px' : '48px', maxWidth: isMobile ? '100%' : '420px', borderRadius: isMobile ? '0' : '20px', minHeight: isMobile ? '100vh' : 'auto', boxShadow: isMobile ? 'none' : '0 24px 80px rgba(0,0,0,0.45)' }}>
-          <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.5rem', color:'#1692A2', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'12px'}} onClick={() => navigate('/')}>Veniar</span>
+        <div style={{ ...s.card, padding: isMobile ? '32px 24px' : '48px', maxWidth: isMobile ? '100%' : '420px', minHeight: isMobile ? '100vh' : 'auto' }}>
+          <span style={{ ...s.wordmark, display: 'block', marginBottom: '12px' }} onClick={() => navigate('/')}>VENIAR</span>
           {!done ? (
               <>
                 <h1 style={s.title}>Choose a new password</h1>
@@ -147,14 +147,15 @@ export function ResetPassword() {
 
 const s = {
   root: { minHeight: '100vh', background: 'var(--vn-bg, #FFF8EA)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", padding: '24px', position: 'relative' },
-  card: { background: 'var(--vn-card, #FFFFFF)', width: '100%', boxSizing: 'border-box', position: 'relative', zIndex: 2, border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))' },
-  backLink: { background: 'none', border: 'none', color: '#0E96CD', fontSize: '13px', fontWeight: '600', cursor: 'pointer', padding: 0, marginBottom: '28px', display: 'block' },
-  title: { color: 'var(--vn-text)', fontSize: '1.6rem', fontWeight: '900', margin: '0 0 8px', letterSpacing: '-0.03em' },
+  card: { background: 'var(--vn-surface, #FFFFFF)', width: '100%', boxSizing: 'border-box', position: 'relative', zIndex: 2, border: '1px solid var(--vn-line, var(--vn-card-border))' },
+  wordmark: { fontFamily: "'Archivo', 'Inter', sans-serif", fontStretch: 'expanded', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.08em', color: 'var(--vn-text)', cursor: 'pointer' },
+  backLink: { background: 'none', border: 'none', color: 'var(--rosso)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', padding: 0, marginBottom: '28px', display: 'block' },
+  title: { color: 'var(--vn-text)', fontSize: '1.6rem', fontWeight: 800, margin: '0 0 8px', letterSpacing: '0.03em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
   sub: { color: 'var(--vn-text-sub)', fontSize: '14px', lineHeight: 1.6, margin: '0 0 28px' },
-  label: { display: 'block', color: '#b45309', fontSize: '10px', fontWeight: '700', marginBottom: '7px', letterSpacing: '2px', textTransform: 'uppercase' },
-  input: { width: '100%', padding: '13px 16px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', borderRadius: '10px', fontSize: '14px', color: 'var(--vn-text)', background: 'var(--vn-bg, #FFF8EA)', outline: 'none', boxSizing: 'border-box', marginBottom: '20px' },
-  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '10px 14px', margin: '0 0 16px' },
-  btn: { width: '100%', padding: '14px', background: '#0E96CD', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '700', cursor: 'pointer' },
+  label: { display: 'block', color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', marginBottom: '7px', letterSpacing: '2px', textTransform: 'uppercase' },
+  input: { width: '100%', padding: '13px 16px', border: '1px solid var(--vn-line, var(--vn-card-border))', borderRadius: 0, fontSize: '14px', color: 'var(--vn-text)', background: 'var(--vn-bg, #FFF8EA)', outline: 'none', boxSizing: 'border-box', marginBottom: '20px' },
+  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 0, padding: '10px 14px', margin: '0 0 16px' },
+  btn: { width: '100%', padding: '14px', background: 'var(--rosso)', color: '#FFF8EA', border: 'none', borderRadius: 0, fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer' },
   success: { display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '12px' },
-  successIcon: { width: '60px', height: '60px', borderRadius: '50%', background: '#0E96CD', color: '#fff', fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  successIcon: { width: '56px', height: '56px', borderRadius: 0, background: 'var(--rosso)', color: '#FFF8EA', fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' },
 };

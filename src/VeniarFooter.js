@@ -200,7 +200,7 @@ export default function VeniarFooter() {
           overflow: 'hidden',
           height: 'clamp(80px, 14vw, 200px)',
           display: 'flex',
-          alignItems: 'flex-end',
+          alignItems: 'flex-start',
           justifyContent: 'center',
         }}
       >
@@ -210,7 +210,6 @@ export default function VeniarFooter() {
             fontSize: 'clamp(6rem, 22vw, 20rem)',
             color: 'var(--vn-surface)',
             lineHeight: 0.8,
-            transform: 'translateY(28%)',
             whiteSpace: 'nowrap',
           }}
         >
