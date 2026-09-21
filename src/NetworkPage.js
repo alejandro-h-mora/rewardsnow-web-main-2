@@ -73,8 +73,9 @@ export default function NetworkPage() {
             }}
           >
             <p style={s.body}>
-              Currently Building... Check back in for a full partner directory and
-              interactive map. Any questions,{' '}
+              Sign in to browse the interactive map of participating businesses near
+              you. We're still growing the network — check back often as more local
+              businesses join. Any questions,{' '}
               <Link to="/contact" style={s.link}>
                 contact support
               </Link>
@@ -82,13 +83,19 @@ export default function NetworkPage() {
             </p>
 
             {/* CTA */}
-            <div style={{ marginTop: '40px' }}>
+            <div style={{ marginTop: '40px', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <button
                 className="vn-cta-primary"
                 style={s.btnPrimary}
                 onClick={() => navigate('/map')}
               >
                 View the map
+              </button>
+              <button
+                className="vn2-btn vn2-btn-outline"
+                onClick={() => navigate('/join')}
+              >
+                Join Veniar
               </button>
             </div>
           </div>

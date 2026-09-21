@@ -29,6 +29,7 @@ import MissionPage from './MissionPage';
 import PartnersPage from './PartnersPage';
 import NewsPage from './NewsPage';
 import JoinPage from './JoinPage';
+import { Terms, Privacy } from './LegalPages';
 
 
 function FloatingThemeToggle() {
@@ -172,6 +173,8 @@ function App() {
       <Route path="/partners" element={<PartnersPage />} />
       <Route path="/news" element={<NewsPage />} />
       <Route path="/join" element={<JoinPage />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
 
       {/* Auth */}
       <Route path="/signin" element={<Login onLogin={handleLogin} />} />

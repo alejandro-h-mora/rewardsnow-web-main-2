@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
@@ -37,6 +38,7 @@ const SERVICES = [
 ];
 
 export default function ServicesPage() {
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const heroBg = '#0E0D0C';
 
@@ -156,6 +158,38 @@ export default function ServicesPage() {
             ))}
           </div>
         </div>
+        </section>
+
+        {/* Closing CTA */}
+        <section
+          style={{
+            background: 'var(--vn-bg)',
+            padding: isMobile ? '64px 24px' : '96px 8%',
+            textAlign: 'center',
+          }}
+        >
+          <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+            <h2 style={{ ...s.h1, fontSize: isMobile ? '1.8rem' : '2.6rem', margin: '0 0 16px' }}>
+              Ready to get started?
+            </h2>
+            <p style={{ ...s.lead, margin: '0 auto 32px' }}>
+              Join as a customer to start earning, or apply to bring your business into the network.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                className="vn2-btn vn2-btn-primary"
+                onClick={() => navigate('/join')}
+              >
+                Join Veniar
+              </button>
+              <button
+                className="vn2-btn vn2-btn-outline"
+                onClick={() => navigate('/business-overview')}
+              >
+                For business owners
+              </button>
+            </div>
+          </div>
         </section>
       </main>
 

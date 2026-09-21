@@ -21,10 +21,10 @@ const COLUMNS = [
     { label: 'Sign in',     path: '/signin' },
   ]},
   { title: 'Company', items: [
-    { label: 'RewardsNow', href: 'https://rewards-now.net', external: true },
-    { label: 'Mission',    path: '/mission' },
-    { label: 'Partners',   path: '/partners' },
-    { label: 'News',       path: '/news' },
+    { label: 'About RewardsNow', path: '/company' },
+    { label: 'Mission',          path: '/mission' },
+    { label: 'Partners',         path: '/partners' },
+    { label: 'News',             path: '/news' },
   ]},
   { title: 'Legal', items: [
     { label: 'Privacy', path: '/privacy' },
