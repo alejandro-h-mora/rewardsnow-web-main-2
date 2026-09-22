@@ -52,7 +52,7 @@ const TRACK_NODE_INDEX = WEB_NODES.reduce(
   0
 );
 
-function ApplyWeb({ trackPos }) {
+function ApplyWeb({ dotPos, linePos }) {
   return (
     <svg
       aria-hidden="true"
@@ -61,8 +61,8 @@ function ApplyWeb({ trackPos }) {
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
     >
       {WEB_LINES.map(([a, b], i) => {
-        const [x1, y1] = a === TRACK_NODE_INDEX && trackPos ? trackPos : WEB_NODES[a];
-        const [x2, y2] = b === TRACK_NODE_INDEX && trackPos ? trackPos : WEB_NODES[b];
+        const [x1, y1] = a === TRACK_NODE_INDEX && linePos ? linePos : WEB_NODES[a];
+        const [x2, y2] = b === TRACK_NODE_INDEX && linePos ? linePos : WEB_NODES[b];
         const delay = Math.min(nodeDelay(WEB_NODES[a]), nodeDelay(WEB_NODES[b]));
         return (
           <line
@@ -75,7 +75,7 @@ function ApplyWeb({ trackPos }) {
       })}
       {WEB_NODES.map(([x, y], i) => {
         const tracked = i === TRACK_NODE_INDEX;
-        const [cx, cy] = tracked && trackPos ? trackPos : [x, y];
+        const [cx, cy] = tracked && dotPos ? dotPos : [x, y];
         return (
           <circle
             key={i}
@@ -94,15 +94,38 @@ function ApplyWeb({ trackPos }) {
 function BusinessBand({ isMobile, navigate }) {
   const sectionRef = useRef(null);
   const [hovering, setHovering] = useState(false);
+  // trackPos drives the dot directly (near-zero delay); lagPos eases
+  // toward it every frame so the connecting lines visibly trail behind
+  // instead of snapping straight to the cursor.
   const [trackPos, setTrackPos] = useState(null);
+  const [lagPos, setLagPos] = useState(null);
+  const trackPosRef = useRef(null);
 
   const handleMouseMove = (e) => {
     const rect = sectionRef.current?.getBoundingClientRect();
     if (!rect) return;
     const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
     const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    trackPosRef.current = [x, y];
     setTrackPos([x, y]);
   };
+
+  useEffect(() => {
+    if (!hovering || prefersReducedMotion()) return;
+    let raf;
+    const ease = 0.2; // lower = more lag behind the dot
+    const tick = () => {
+      setLagPos((prev) => {
+        const target = trackPosRef.current;
+        if (!target) return prev;
+        if (!prev) return target;
+        return [prev[0] + (target[0] - prev[0]) * ease, prev[1] + (target[1] - prev[1]) * ease];
+      });
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [hovering]);
 
   return (
     <section
@@ -115,7 +138,7 @@ function BusinessBand({ isMobile, navigate }) {
         padding: isMobile ? '72px 24px' : '120px 8%',
       }}
     >
-      <ApplyWeb trackPos={hovering ? trackPos : null} />
+      <ApplyWeb dotPos={hovering ? trackPos : null} linePos={hovering ? (lagPos || trackPos) : null} />
       <FadeUp style={{ position: 'relative' }}>
         <Eyebrow style={{ color: '#FFF8EA', opacity: 0.85, marginBottom: 20 }}>For Businesses</Eyebrow>
         <SectionHeading
@@ -169,6 +192,7 @@ function BusinessBand({ isMobile, navigate }) {
               e.currentTarget.style.background = '#FFF8EA';
               e.currentTarget.style.color = 'var(--rosso)';
               setHovering(false);
+              setLagPos(null);
             }}
           >
             Apply to join
