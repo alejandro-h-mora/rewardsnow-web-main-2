@@ -18,6 +18,104 @@ const ACCENTS = ['var(--rosso-soft)', 'var(--blue-soft)'];
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ── "Apply to join" web/constellation hover effect ──────────────────── */
+const WEB_NODES = [
+  [8, 20], [18, 45], [30, 10], [42, 58], [55, 25], [68, 50], [80, 15],
+  [88, 42], [15, 75], [28, 90], [42, 78], [56, 92], [70, 78], [85, 88], [95, 60], [50, 8],
+];
+
+function buildWebLines(nodes, k = 2) {
+  const lines = [];
+  const seen = new Set();
+  nodes.forEach((a, i) => {
+    const nearest = nodes
+      .map((b, j) => ({ j, d: i === j ? Infinity : Math.hypot(a[0] - b[0], a[1] - b[1]) }))
+      .sort((x, y) => x.d - y.d)
+      .slice(0, k);
+    nearest.forEach(({ j }) => {
+      const key = i < j ? `${i}-${j}` : `${j}-${i}`;
+      if (!seen.has(key)) { seen.add(key); lines.push([i, j]); }
+    });
+  });
+  return lines;
+}
+const WEB_LINES = buildWebLines(WEB_NODES);
+// Roughly where the "Apply to join" button sits (bottom-right of the
+// section) -- nodes closer to it light up first, so the web reads as
+// expanding outward from the button.
+const WEB_ORIGIN = [92, 92];
+const nodeDelay = ([x, y]) => Math.hypot(WEB_ORIGIN[0] - x, WEB_ORIGIN[1] - y) * 4;
+
+function ApplyWeb() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+    >
+      {WEB_LINES.map(([a, b], i) => {
+        const [x1, y1] = WEB_NODES[a];
+        const [x2, y2] = WEB_NODES[b];
+        const delay = Math.min(nodeDelay(WEB_NODES[a]), nodeDelay(WEB_NODES[b]));
+        return (
+          <line
+            key={i}
+            className="vn2-web-line"
+            x1={x1} y1={y1} x2={x2} y2={y2}
+            style={{ transitionDelay: `${delay}ms`, animationDelay: `${delay}ms` }}
+          />
+        );
+      })}
+      {WEB_NODES.map(([x, y], i) => (
+        <circle
+          key={i}
+          className="vn2-web-dot"
+          cx={x} cy={y} r={1.1}
+          style={{ transitionDelay: `${nodeDelay([x, y])}ms` }}
+        />
+      ))}
+    </svg>
+  );
+}
+
+/* ── Rolling digit animation for the points balance ───────────────────── */
+function RollingPoints({ value }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(prefersReducedMotion());
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <span ref={ref} style={{ display: 'inline-block' }}>
+      {value.split('').map((ch, i) => (
+        <span
+          key={i}
+          className={visible ? 'vn2-digit-roll' : ''}
+          style={{ display: 'inline-block', animationDelay: `${i * 90}ms` }}
+        >
+          {ch}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /* ── The three-value strip ───────────────────────────────────────────── */
 const VALUES = [
   { num: '01', title: 'Earn locally', body: 'Earn rewards at participating businesses in your community.' },
@@ -84,7 +182,7 @@ function PointsCard() {
       </div>
 
       <div className="vn-display" style={{ fontSize: 'clamp(2.6rem, 6vw, 3.6rem)', marginBottom: 4, letterSpacing: '0.01em' }}>
-        1,240 <span style={{ fontSize: '0.4em', color: 'var(--vn-text-sub)' }}>PTS</span>
+        <RollingPoints value="1,240" /> <span style={{ fontSize: '0.4em', color: 'var(--vn-text-sub)' }}>PTS</span>
       </div>
       <p style={{ fontSize: 13, color: 'var(--vn-text-muted)', marginBottom: 28 }}>Balance across the network</p>
 
@@ -351,6 +449,7 @@ export default function LandingPage() {
               <Carousel
                 ariaLabel="Participating venues"
                 items={VENUES}
+                cardWidth={isMobile ? '85vw' : '360px'}
                 renderItem={(venue, index) => (
                   <VenueCard venue={venue} index={index} isMobile={isMobile} navigate={navigate} />
                 )}
@@ -390,12 +489,14 @@ export default function LandingPage() {
         {/* ── 5. For business owners band ────────────────────────────── */}
         <section
           aria-labelledby="business-heading"
+          className="vn2-web-section"
           style={{
             background: 'var(--rosso)',
             padding: isMobile ? '72px 24px' : '120px 8%',
           }}
         >
-          <FadeUp>
+          <ApplyWeb />
+          <FadeUp style={{ position: 'relative' }}>
             <Eyebrow style={{ color: '#FFF8EA', opacity: 0.85, marginBottom: 20 }}>For Businesses</Eyebrow>
             <SectionHeading
               id="business-heading"
@@ -422,6 +523,7 @@ export default function LandingPage() {
               </ul>
 
               <button
+                className="vn2-apply-btn"
                 onClick={() => navigate('/business-overview')}
                 style={{
                   background: '#FFF8EA',

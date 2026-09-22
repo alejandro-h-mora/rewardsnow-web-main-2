@@ -69,6 +69,14 @@ export default function VeniarNav({ solidFromStart = false }) {
     setMenuOpen(false);
   };
 
+  // Once scrolled solid, the bar always reads as the light-theme bar
+  // (cream/white with dark text) regardless of the site's dark/light
+  // toggle -- only the transparent hero-overlay state adapts, since that
+  // one already sits on a dark scrim either way.
+  const scrolledText = '#141210';
+  const textColor = scrolled ? scrolledText : 'var(--vn-text)';
+  const activeColor = scrolled ? 'var(--blue-hover, #3D8FCC)' : 'var(--blue-soft)';
+
   const navStyle = {
     position: 'fixed',
     top: 0,
@@ -80,10 +88,10 @@ export default function VeniarNav({ solidFromStart = false }) {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '0 24px',
-    background: scrolled ? 'var(--vn-nav-bg)' : 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 100%)',
+    background: scrolled ? 'rgba(255,248,234,0.92)' : 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 100%)',
     backdropFilter: scrolled ? 'blur(12px)' : 'none',
     WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
-    borderBottom: scrolled ? '1px solid var(--vn-nav-border)' : '1px solid transparent',
+    borderBottom: scrolled ? '1px solid rgba(20,18,16,0.14)' : '1px solid transparent',
     transform: hidden && !menuOpen ? 'translateY(-100%)' : 'translateY(0)',
     transition: 'background-color 300ms var(--ease-cinematic), border-color 300ms var(--ease-cinematic), transform 350ms var(--ease-cinematic)',
   };
@@ -94,7 +102,7 @@ export default function VeniarNav({ solidFromStart = false }) {
     fontWeight: 800,
     fontSize: '19px',
     letterSpacing: '0.08em',
-    color: 'var(--vn-text)',
+    color: textColor,
     cursor: 'pointer',
     userSelect: 'none',
     background: 'none',
@@ -110,7 +118,7 @@ export default function VeniarNav({ solidFromStart = false }) {
     fontWeight: 700,
     letterSpacing: '0.14em',
     textTransform: 'uppercase',
-    color: isActive(path) ? 'var(--blue-soft)' : 'var(--vn-text)',
+    color: isActive(path) ? activeColor : textColor,
     cursor: 'pointer',
     fontFamily: "'Inter', sans-serif",
     whiteSpace: 'nowrap',
@@ -124,7 +132,7 @@ export default function VeniarNav({ solidFromStart = false }) {
     fontWeight: 700,
     letterSpacing: '0.14em',
     textTransform: 'uppercase',
-    color: 'var(--vn-text)',
+    color: textColor,
     cursor: 'pointer',
     fontFamily: "'Inter', sans-serif",
     whiteSpace: 'nowrap',
@@ -132,13 +140,13 @@ export default function VeniarNav({ solidFromStart = false }) {
 
   const menuBtnStyle = {
     background: 'none',
-    border: '1px solid var(--vn-line, var(--vn-card-border))',
+    border: `1px solid ${scrolled ? 'rgba(20,18,16,0.18)' : 'var(--vn-line, var(--vn-card-border))'}`,
     padding: '9px 18px',
     fontSize: '12px',
     fontWeight: 700,
     letterSpacing: '0.14em',
     textTransform: 'uppercase',
-    color: 'var(--vn-text)',
+    color: textColor,
     cursor: 'pointer',
     fontFamily: "'Inter', sans-serif",
   };

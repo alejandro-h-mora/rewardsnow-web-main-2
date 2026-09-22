@@ -53,6 +53,26 @@ export default function VeniarFooter() {
             <p style={{ fontSize: 15, color: 'var(--vn-text-sub)' }}>Thanks — we'll be in touch.</p>
           ) : (
             <form onSubmit={handleSubscribe} style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+              <button
+                type="submit"
+                aria-label="Subscribe"
+                className="vn2-underline"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '10px 0',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: 'var(--vn-text)',
+                  cursor: 'pointer',
+                  fontFamily: "'Inter', sans-serif",
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Subscribe &rarr;
+              </button>
               <label htmlFor="footer-email" style={{ flex: 1 }}>
                 <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>
                   Email address
@@ -77,25 +97,6 @@ export default function VeniarFooter() {
                   }}
                 />
               </label>
-              <button
-                type="submit"
-                aria-label="Subscribe"
-                className="vn2-underline"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: '10px 0',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: 'var(--vn-text)',
-                  cursor: 'pointer',
-                  fontFamily: "'Inter', sans-serif",
-                }}
-              >
-                Subscribe &rarr;
-              </button>
             </form>
           )}
         </div>
@@ -193,23 +194,22 @@ export default function VeniarFooter() {
         </div>
       </div>
 
-      {/* Huge cropped wordmark */}
+      {/* Huge wordmark, fully visible (no clipping) */}
       <div
         aria-hidden="true"
         style={{
-          overflow: 'hidden',
-          height: 'clamp(80px, 14vw, 200px)',
           display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'center',
           justifyContent: 'center',
+          padding: '24px 24px 32px',
         }}
       >
         <span
           className="vn-display"
           style={{
-            fontSize: 'clamp(6rem, 22vw, 20rem)',
+            fontSize: 'clamp(3rem, 12vw, 11rem)',
             color: 'var(--vn-surface)',
-            lineHeight: 0.8,
+            lineHeight: 1,
             whiteSpace: 'nowrap',
           }}
         >

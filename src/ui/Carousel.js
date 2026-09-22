@@ -6,23 +6,34 @@ import { useRef, useState, useEffect, useCallback } from 'react';
  * opacity, neighbors are dimmed — dimming itself is left to renderItem
  * via the `active` flag it receives.
  */
-export default function Carousel({ items, renderItem, ariaLabel = 'Carousel', gap = 24 }) {
+export default function Carousel({ items, renderItem, ariaLabel = 'Carousel', gap = 24, cardWidth }) {
   const trackRef = useRef(null);
   const [active, setActive] = useState(0);
   const dragState = useRef({ dragging: false, startX: 0, startScroll: 0, moved: false });
+
+  // With scroll-snap-align: center, the first and last cards can never
+  // actually reach the centered/"active" position on their own -- there's
+  // no room left to scroll past their own edge. Spacer elements at both
+  // ends of the track (sized to roughly half the viewport minus half a
+  // card) give the browser room to center them too.
+  const hasSpacers = Boolean(cardWidth);
+  const indexOffset = hasSpacers ? 1 : 0;
+  const spacerStyle = hasSpacers
+    ? { flex: '0 0 auto', width: `calc(50% - (${cardWidth}) / 2)` }
+    : null;
 
   const scrollToIndex = useCallback((index) => {
     const track = trackRef.current;
     if (!track) return;
     const clamped = Math.max(0, Math.min(items.length - 1, index));
-    const child = track.children[clamped];
+    const child = track.children[clamped + indexOffset];
     if (child) {
       track.scrollTo({
         left: child.offsetLeft - (track.offsetWidth - child.offsetWidth) / 2,
         behavior: 'smooth',
       });
     }
-  }, [items.length]);
+  }, [items.length, indexOffset]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -32,16 +43,17 @@ export default function Carousel({ items, renderItem, ariaLabel = 'Carousel', ga
       let closest = 0;
       let closestDist = Infinity;
       Array.from(track.children).forEach((child, i) => {
+        if (child.dataset.spacer) return;
         const childCenter = child.offsetLeft + child.offsetWidth / 2;
         const dist = Math.abs(childCenter - center);
-        if (dist < closestDist) { closestDist = dist; closest = i; }
+        if (dist < closestDist) { closestDist = dist; closest = i - indexOffset; }
       });
       setActive(closest);
     };
     track.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => track.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [indexOffset]);
 
   const onPointerDown = (e) => {
     if (e.pointerType === 'touch') return; // native touch panning handles this
@@ -93,6 +105,7 @@ export default function Carousel({ items, renderItem, ariaLabel = 'Carousel', ga
           paddingBottom: 4,
         }}
       >
+        {hasSpacers && <div aria-hidden="true" data-spacer="true" style={spacerStyle} />}
         {items.map((item, i) => (
           <div
             key={item.id ?? i}
@@ -109,6 +122,7 @@ export default function Carousel({ items, renderItem, ariaLabel = 'Carousel', ga
             {renderItem(item, i, i === active)}
           </div>
         ))}
+        {hasSpacers && <div aria-hidden="true" data-spacer="true" style={spacerStyle} />}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 28 }}>
