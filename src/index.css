@@ -348,6 +348,13 @@ select:focus-visible,
   opacity: 0;
   transition: opacity 600ms var(--ease-cinematic);
 }
+/* The node nearest the button breaks formation and chases the cursor --
+   a quick, linear cx/cy transition so it reads as "following" rather
+   than teleporting between mousemove samples. */
+.vn2-web-dot-tracked {
+  transition: opacity 500ms var(--ease-cinematic), transform 500ms var(--ease-cinematic),
+              cx 90ms linear, cy 90ms linear;
+}
 .vn2-web-section:has(.vn2-apply-btn:hover) .vn2-web-dot {
   opacity: 1;
   transform: scale(1);

@@ -45,8 +45,14 @@ const WEB_LINES = buildWebLines(WEB_NODES);
 // expanding outward from the button.
 const WEB_ORIGIN = [92, 92];
 const nodeDelay = ([x, y]) => Math.hypot(WEB_ORIGIN[0] - x, WEB_ORIGIN[1] - y) * 4;
+// The single node nearest the button -- this is the one that breaks
+// formation and chases the cursor while the button is hovered.
+const TRACK_NODE_INDEX = WEB_NODES.reduce(
+  (best, node, i) => (nodeDelay(node) < nodeDelay(WEB_NODES[best]) ? i : best),
+  0
+);
 
-function ApplyWeb() {
+function ApplyWeb({ trackPos }) {
   return (
     <svg
       aria-hidden="true"
@@ -55,8 +61,8 @@ function ApplyWeb() {
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
     >
       {WEB_LINES.map(([a, b], i) => {
-        const [x1, y1] = WEB_NODES[a];
-        const [x2, y2] = WEB_NODES[b];
+        const [x1, y1] = a === TRACK_NODE_INDEX && trackPos ? trackPos : WEB_NODES[a];
+        const [x2, y2] = b === TRACK_NODE_INDEX && trackPos ? trackPos : WEB_NODES[b];
         const delay = Math.min(nodeDelay(WEB_NODES[a]), nodeDelay(WEB_NODES[b]));
         return (
           <line
@@ -67,15 +73,109 @@ function ApplyWeb() {
           />
         );
       })}
-      {WEB_NODES.map(([x, y], i) => (
-        <circle
-          key={i}
-          className="vn2-web-dot"
-          cx={x} cy={y} r={1.1}
-          style={{ transitionDelay: `${nodeDelay([x, y])}ms` }}
-        />
-      ))}
+      {WEB_NODES.map(([x, y], i) => {
+        const tracked = i === TRACK_NODE_INDEX;
+        const [cx, cy] = tracked && trackPos ? trackPos : [x, y];
+        return (
+          <circle
+            key={i}
+            className={tracked ? 'vn2-web-dot vn2-web-dot-tracked' : 'vn2-web-dot'}
+            cx={cx} cy={cy} r={1.1}
+            style={{ transitionDelay: `${nodeDelay([x, y])}ms` }}
+          />
+        );
+      })}
     </svg>
+  );
+}
+
+/* ── "For Businesses" band -- owns its own mouse tracking so the rest of
+   the page doesn't re-render on every mousemove ──────────────────────── */
+function BusinessBand({ isMobile, navigate }) {
+  const sectionRef = useRef(null);
+  const [hovering, setHovering] = useState(false);
+  const [trackPos, setTrackPos] = useState(null);
+
+  const handleMouseMove = (e) => {
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    setTrackPos([x, y]);
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-labelledby="business-heading"
+      className="vn2-web-section"
+      onMouseMove={handleMouseMove}
+      style={{
+        background: 'var(--rosso)',
+        padding: isMobile ? '72px 24px' : '120px 8%',
+      }}
+    >
+      <ApplyWeb trackPos={hovering ? trackPos : null} />
+      <FadeUp style={{ position: 'relative' }}>
+        <Eyebrow style={{ color: '#FFF8EA', opacity: 0.85, marginBottom: 20 }}>For Businesses</Eyebrow>
+        <SectionHeading
+          id="business-heading"
+          as="h2"
+          size="lg"
+          style={{ color: '#FFF8EA', maxWidth: 900, marginBottom: 36, fontSize: 'clamp(2.4rem, 7vw, 5.5rem)' }}
+        >
+          Shared rewards infrastructure for independent businesses.
+        </SectionHeading>
+
+        <div style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? 32 : 64,
+          alignItems: isMobile ? 'flex-start' : 'flex-end',
+          justifyContent: 'space-between',
+        }}>
+          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {BUSINESS_BENEFITS.map((line) => (
+              <li key={line} style={{ fontSize: 16, color: 'rgba(255,248,234,0.85)' }}>
+                {line}
+              </li>
+            ))}
+          </ul>
+
+          <button
+            className="vn2-apply-btn"
+            onClick={() => navigate('/business-overview')}
+            style={{
+              background: '#FFF8EA',
+              color: 'var(--rosso)',
+              border: '1px solid #FFF8EA',
+              borderRadius: 0,
+              padding: '16px 32px',
+              fontSize: 13,
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              fontFamily: "'Inter', sans-serif",
+              whiteSpace: 'nowrap',
+              transition: 'background-color 300ms var(--ease-cinematic), color 300ms var(--ease-cinematic)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#FFF8EA';
+              setHovering(true);
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#FFF8EA';
+              e.currentTarget.style.color = 'var(--rosso)';
+              setHovering(false);
+            }}
+          >
+            Apply to join
+          </button>
+        </div>
+      </FadeUp>
+    </section>
   );
 }
 
@@ -487,67 +587,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── 5. For business owners band ────────────────────────────── */}
-        <section
-          aria-labelledby="business-heading"
-          className="vn2-web-section"
-          style={{
-            background: 'var(--rosso)',
-            padding: isMobile ? '72px 24px' : '120px 8%',
-          }}
-        >
-          <ApplyWeb />
-          <FadeUp style={{ position: 'relative' }}>
-            <Eyebrow style={{ color: '#FFF8EA', opacity: 0.85, marginBottom: 20 }}>For Businesses</Eyebrow>
-            <SectionHeading
-              id="business-heading"
-              as="h2"
-              size="lg"
-              style={{ color: '#FFF8EA', maxWidth: 900, marginBottom: 36, fontSize: 'clamp(2.4rem, 7vw, 5.5rem)' }}
-            >
-              Shared rewards infrastructure for independent businesses.
-            </SectionHeading>
-
-            <div style={{
-              display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-              gap: isMobile ? 32 : 64,
-              alignItems: isMobile ? 'flex-start' : 'flex-end',
-              justifyContent: 'space-between',
-            }}>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {BUSINESS_BENEFITS.map((line) => (
-                  <li key={line} style={{ fontSize: 16, color: 'rgba(255,248,234,0.85)' }}>
-                    {line}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                className="vn2-apply-btn"
-                onClick={() => navigate('/business-overview')}
-                style={{
-                  background: '#FFF8EA',
-                  color: 'var(--rosso)',
-                  border: '1px solid #FFF8EA',
-                  borderRadius: 0,
-                  padding: '16px 32px',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  fontFamily: "'Inter', sans-serif",
-                  whiteSpace: 'nowrap',
-                  transition: 'background-color 300ms var(--ease-cinematic), color 300ms var(--ease-cinematic)',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FFF8EA'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = '#FFF8EA'; e.currentTarget.style.color = 'var(--rosso)'; }}
-              >
-                Apply to join
-              </button>
-            </div>
-          </FadeUp>
-        </section>
+        <BusinessBand isMobile={isMobile} navigate={navigate} />
       </main>
 
       <VeniarFooter />
