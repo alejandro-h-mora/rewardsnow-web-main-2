@@ -78,7 +78,7 @@ export default function VeniarProductPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>ABOUT US</p>
 
@@ -114,8 +114,7 @@ export default function VeniarProductPage() {
         >
         <div style={{
             maxWidth: '720px',
-            margin: '0 auto',
-            padding: isMobile ? '0 24px' : '0 8%',
+                        padding: isMobile ? '0 24px' : '0 8%',
             display: 'flex',
             flexDirection: 'column',
             gap: '48px',
@@ -156,8 +155,7 @@ export default function VeniarProductPage() {
         <div
           style={{
             maxWidth: '720px',
-            margin: '0 auto',
-            padding: isMobile ? '0 24px' : '0 8%',
+                        padding: isMobile ? '0 24px' : '0 8%',
           }}
         >
           <div

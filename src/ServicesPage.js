@@ -67,7 +67,7 @@ export default function ServicesPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '860px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '860px', padding: isMobile ? '0 24px' : '0 8%' }}>
           <p style={s.eyebrow}>SERVICES</p>
           <h1 style={{ ...s.h1, fontSize: isMobile ? '2.8rem' : '4.8rem', color: '#FFF8EA' }}>
             What Veniar offers.
@@ -89,7 +89,6 @@ export default function ServicesPage() {
         <div
           style={{
             maxWidth: '1100px',
-            margin: '0 auto',
             padding: isMobile ? '0 24px' : '0 8%',
           }}
         >

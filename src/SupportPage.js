@@ -104,7 +104,7 @@ export default function SupportPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '760px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '760px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>SUPPORT</p>
 
@@ -132,7 +132,6 @@ export default function SupportPage() {
         <section
           style={{
             maxWidth: '760px',
-            margin: '0 auto',
             padding: isMobile ? '48px 24px 80px' : '64px 8% 100px',
           }}
         >

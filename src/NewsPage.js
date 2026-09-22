@@ -132,7 +132,7 @@ export default function NewsPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>COMPANY</p>
 
@@ -164,7 +164,7 @@ export default function NewsPage() {
             padding: isMobile ? '56px 0 40px' : '80px 0 48px',
           }}
         >
-          <div style={{ maxWidth: '1040px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '1040px', padding: isMobile ? '0 24px' : '0 8%' }}>
             <FadeInBoth>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: YELLOW, marginBottom: 16 }}>
                 FEATURED
@@ -210,7 +210,7 @@ export default function NewsPage() {
             padding: isMobile ? '24px 0 80px' : '32px 0 100px',
           }}
         >
-          <div style={{ maxWidth: '1040px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '1040px', padding: isMobile ? '0 24px' : '0 8%' }}>
             <div style={{
               display:             'grid',
               gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',

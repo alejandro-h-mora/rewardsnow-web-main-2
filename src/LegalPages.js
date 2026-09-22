@@ -10,7 +10,7 @@ const PageShell = ({ title, updated, children }) => {
       <VeniarNav />
       <main>
         <section style={{ background: '#0E0D0C', paddingTop: isMobile ? 120 : 160, paddingBottom: isMobile ? 56 : 80 }}>
-          <div style={{ maxWidth: 720, margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: 720, padding: isMobile ? '0 24px' : '0 8%' }}>
             <p style={s.eyebrow}>LEGAL</p>
             <h1 style={{ ...s.h1, fontSize: isMobile ? '2.4rem' : '3.6rem' }}>{title}</h1>
             <div style={s.hairline} />
@@ -18,7 +18,7 @@ const PageShell = ({ title, updated, children }) => {
           </div>
         </section>
         <section style={{ background: 'var(--vn-panel, #F7E8CF)', padding: isMobile ? '48px 0 80px' : '64px 0 100px' }}>
-          <div style={{ maxWidth: 720, margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: 720, padding: isMobile ? '0 24px' : '0 8%' }}>
             {children}
           </div>
         </section>

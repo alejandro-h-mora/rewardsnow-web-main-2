@@ -37,7 +37,7 @@ export default function MissionPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>COMPANY</p>
 
@@ -79,8 +79,7 @@ export default function MissionPage() {
           <div
             style={{
               maxWidth: '720px',
-              margin: '0 auto',
-              padding: isMobile ? '0 24px' : '0 8%',
+                            padding: isMobile ? '0 24px' : '0 8%',
             }}
           >
             <button

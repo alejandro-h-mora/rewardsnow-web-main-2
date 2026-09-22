@@ -208,7 +208,7 @@ const s = {
   root: { minHeight: '100vh', background: 'var(--vn-bg, #FFF8EA)', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", position: 'relative', overflow: 'hidden' },
 
   hero: { position: 'relative', zIndex: 1 },
-  heroInner: { width: '100%', maxWidth: '900px', margin: '0 auto' },
+  heroInner: { width: '100%', maxWidth: '900px' },
   eyebrow: { color: 'var(--vn-text)', opacity: 0.72, fontSize: '11px', fontWeight: '700', letterSpacing: '0.24em', margin: '0 0 20px', textTransform: 'uppercase' },
   heroTitle: { color: 'var(--vn-text)', fontWeight: '900', lineHeight: 1.06, letterSpacing: '0.04em', textTransform: 'uppercase', fontFamily: "'Archivo','Inter',sans-serif", margin: '0 0 24px' },
   goldBar: { width: '48px', height: '1px', background: 'var(--vn-line, var(--vn-card-border))', borderRadius: 0, marginBottom: '24px' },
@@ -219,7 +219,7 @@ const s = {
   section: { position: 'relative', zIndex: 1 },
   sectionAlt: { position: 'relative', zIndex: 1, background: 'var(--vn-panel, #F7E8CF)' },
   ctaFooter: { position: 'relative', zIndex: 1 },
-  contentMax: { maxWidth: '900px', margin: '0 auto' },
+  contentMax: { maxWidth: '900px' },
 
   tag: { color: 'var(--vn-text)', opacity: 0.72, fontSize: '11px', fontWeight: '700', letterSpacing: '0.24em', margin: '0 0 14px', textTransform: 'uppercase' },
   h2: { color: 'var(--vn-text)', fontWeight: '900', lineHeight: 1.1, letterSpacing: '0.04em', textTransform: 'uppercase', fontFamily: "'Archivo','Inter',sans-serif", margin: '0 0 20px' },
@@ -253,7 +253,7 @@ const s = {
   stepTitle: { color: 'var(--vn-text)', fontSize: '15px', fontWeight: '700', margin: '0 0 8px' },
   stepDesc: { color: 'var(--vn-text-sub)', fontSize: '13px', lineHeight: 1.6, margin: 0 },
 
-  empSection: { display: 'flex', alignItems: 'flex-start', position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto' },
+  empSection: { display: 'flex', alignItems: 'flex-start', position: 'relative', zIndex: 1, maxWidth: '900px' },
   empBigBtn: { display: 'inline-block', padding: '15px 32px', background: 'var(--rosso)', border: 'none', color: '#FFF8EA', borderRadius: 0, fontSize: '15px', fontWeight: '700', marginBottom: '10px', cursor: 'pointer', fontFamily: 'inherit' },
   empLinkNote: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0 },
   empBadgeBox: { background: 'var(--vn-card, #FFFFFF)', borderRadius: 0, padding: '24px 28px', minWidth: '240px', flexShrink: 0 },

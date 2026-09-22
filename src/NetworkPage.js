@@ -37,7 +37,7 @@ export default function NetworkPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>NETWORK</p>
 
@@ -68,8 +68,7 @@ export default function NetworkPage() {
           <div
             style={{
               maxWidth: '720px',
-              margin: '0 auto',
-              padding: isMobile ? '0 24px' : '0 8%',
+                            padding: isMobile ? '0 24px' : '0 8%',
             }}
           >
             <p style={s.body}>

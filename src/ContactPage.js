@@ -41,7 +41,7 @@ export default function ContactPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>SUPPORT</p>
 
@@ -106,8 +106,7 @@ export default function ContactPage() {
           <div
             style={{
               maxWidth: '720px',
-              margin: '0 auto',
-              padding: isMobile ? '0 24px' : '0 8%',
+                            padding: isMobile ? '0 24px' : '0 8%',
             }}
           >
             {/* Self-service support card */}

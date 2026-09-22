@@ -69,12 +69,15 @@ export default function VeniarNav({ solidFromStart = false }) {
     setMenuOpen(false);
   };
 
-  // Once scrolled solid, the bar always reads as the light-theme bar
-  // (cream/white with dark text) regardless of the site's dark/light
-  // toggle -- only the transparent hero-overlay state adapts, since that
-  // one already sits on a dark scrim either way.
+  // The bar has two fixed looks, neither of which follows the site's
+  // dark/light toggle: transparent-over-hero always reads light (cream
+  // text) since the hero scrim is dark in both themes, and scrolled-solid
+  // always reads light-theme (cream bg, dark text) once it picks up its
+  // own background. Letting either follow the theme risks dark-on-dark
+  // (or light-on-light) text with no contrast against its own backdrop.
   const scrolledText = '#141210';
-  const textColor = scrolled ? scrolledText : 'var(--vn-text)';
+  const unscrolledText = '#FFF8EA';
+  const textColor = scrolled ? scrolledText : unscrolledText;
   const activeColor = scrolled ? 'var(--blue-hover, #3D8FCC)' : 'var(--blue-soft)';
 
   const navStyle = {
@@ -140,7 +143,7 @@ export default function VeniarNav({ solidFromStart = false }) {
 
   const menuBtnStyle = {
     background: 'none',
-    border: `1px solid ${scrolled ? 'rgba(20,18,16,0.18)' : 'var(--vn-line, var(--vn-card-border))'}`,
+    border: `1px solid ${scrolled ? 'rgba(20,18,16,0.18)' : 'rgba(255,248,234,0.4)'}`,
     padding: '9px 18px',
     fontSize: '12px',
     fontWeight: 700,
