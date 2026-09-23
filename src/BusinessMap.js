@@ -5,7 +5,7 @@ import L from 'leaflet';
 import { useIsMobile } from './useIsMobile';
 import { API } from './config';
 
-const ROYAL = '#2040C8';
+const ROYAL = 'var(--rosso)';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -202,32 +202,32 @@ const s = {
   topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px', height: '56px', background: 'var(--rn-nav-bg)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid var(--rn-nav-border)', zIndex: 1000, position: 'relative', flexShrink: 0 },
   logo: { color: ROYAL, fontSize: '1.2rem', fontWeight: '800' },
   topBarRight: { display: 'flex', alignItems: 'center', gap: '6px' },
-  navBtn: { padding: '6px 10px', borderRadius: '8px', border: '1.5px solid var(--rn-nav-border)', background: 'transparent', color: ROYAL, cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
-  logoutBtn: { padding: '6px 12px', borderRadius: '8px', border: '1.5px solid var(--rn-nav-border)', background: 'transparent', color: 'var(--rn-text-sub)', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
+  navBtn: { padding: '6px 10px', borderRadius: 0, border: '1.5px solid var(--rn-nav-border)', background: 'transparent', color: ROYAL, cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
+  logoutBtn: { padding: '6px 12px', borderRadius: 0, border: '1.5px solid var(--rn-nav-border)', background: 'transparent', color: 'var(--rn-text-sub)', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
   body: { display: 'flex', flex: 1, overflow: 'hidden' },
   sidebar: { background: 'var(--rn-form-bg)', padding: '16px', overflowY: 'auto', zIndex: 10 },
   sidebarTitle: { color: ROYAL, fontSize: '1.1rem', fontWeight: '800', margin: '0 0 4px 0' },
   sidebarSub: { color: 'var(--rn-text-muted)', fontSize: '12px', margin: '0 0 14px 0' },
   skeletonList: { display: 'flex', flexDirection: 'column', gap: '10px' },
-  skeleton: { height: '56px', borderRadius: '12px', background: 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' },
+  skeleton: { height: '56px', borderRadius: 0, background: 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' },
   emptyState: { textAlign: 'center', padding: '24px 0' },
   emptyText: { color: 'var(--rn-text-muted)', fontSize: '13px' },
   bizList: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  bizCard: { display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '12px', border: '1.5px solid var(--rn-card-border)', cursor: 'pointer', transition: 'border-color 0.2s' },
-  bizInitial: { width: '36px', height: '36px', borderRadius: '9px', color: '#ffffff', fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  bizCard: { display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: 0, border: '1.5px solid var(--rn-card-border)', cursor: 'pointer', transition: 'border-color 0.2s' },
+  bizInitial: { width: '36px', height: '36px', borderRadius: 0, color: '#ffffff', fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   bizMeta: { flex: 1, minWidth: 0 },
   bizName: { color: 'var(--rn-text)', fontSize: '13px', fontWeight: '700', margin: '0 0 2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   bizAddress: { color: 'var(--rn-text-muted)', fontSize: '11px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  featuredPill: { background: '#fff8e1', color: '#7a5500', fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '20px', marginTop: '4px', display: 'inline-block' },
+  featuredPill: { background: '#fff8e1', color: '#7a5500', fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: 0, marginTop: '4px', display: 'inline-block' },
   pinDot: { width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', flexShrink: 0 },
   mapWrapper: { position: 'relative', minWidth: 0 },
   mapLoading: { position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--rn-bg)' },
-  geocodingOverlay: { position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.65)', borderRadius: '20px', padding: '8px 18px', zIndex: 500, pointerEvents: 'none' },
+  geocodingOverlay: { position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.65)', borderRadius: 0, padding: '8px 18px', zIndex: 500, pointerEvents: 'none' },
   geocodingText: { color: '#fff', fontSize: '13px', margin: 0 },
   popup: { fontFamily: "'Segoe UI', system-ui, sans-serif", minWidth: '160px', maxWidth: '220px' },
   popupName: { color: ROYAL, fontSize: '14px', display: 'block', marginBottom: '4px', fontWeight: '700' },
   popupAddress: { color: '#888', fontSize: '12px', margin: '0 0 10px 0' },
-  popupBtn: { padding: '7px 12px', borderRadius: '8px', border: 'none', background: ROYAL, color: '#ffffff', fontSize: '12px', fontWeight: '700', cursor: 'pointer', width: '100%' },
+  popupBtn: { padding: '7px 12px', borderRadius: 0, border: 'none', background: ROYAL, color: '#ffffff', fontSize: '12px', fontWeight: '700', cursor: 'pointer', width: '100%' },
   mobileBottomNav: { display: 'flex', borderTop: '1px solid var(--rn-nav-border)', background: 'var(--rn-nav-bg)', flexShrink: 0 },
   mobileNavBtn: { flex: 1, padding: '12px', background: 'none', border: 'none', fontSize: '12px', fontWeight: '500', color: 'var(--rn-text-sub)', cursor: 'pointer' },
 };

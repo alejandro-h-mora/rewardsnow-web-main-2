@@ -1,8 +1,8 @@
 const venues = [
-  { x: 92, y: 92, label: 'Coffee', color: '#D66024', icon: 'cup' },
-  { x: 325, y: 76, label: 'Market', color: '#0F8966', icon: 'bag' },
-  { x: 342, y: 224, label: 'Dining', color: '#EDA81B', icon: 'fork' },
-  { x: 104, y: 246, label: 'Shops', color: '#0E96CD', icon: 'shop' },
+  { x: 92, y: 92, label: 'Coffee', color: 'var(--rosso)', icon: 'cup' },
+  { x: 325, y: 76, label: 'Market', color: 'var(--blue)', icon: 'bag' },
+  { x: 342, y: 224, label: 'Dining', color: 'var(--rosso)', icon: 'fork' },
+  { x: 104, y: 246, label: 'Shops', color: 'var(--blue)', icon: 'shop' },
 ];
 
 function VenueIcon({ type }) {
@@ -85,13 +85,13 @@ export default function NetworkVisual() {
           className="vn-discovery-route"
           d="M209 166C175 132 136 114 92 92M211 166c40-55 72-77 114-90M211 167c54 10 91 27 131 57M209 168c-38 30-68 53-105 78"
           fill="none"
-          stroke="#1692A2"
+          stroke="var(--rosso)"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeDasharray="5 8"
         />
 
-        <circle className="vn-discovery-radius" cx="210" cy="166" r="76" fill="none" stroke="#1692A2" strokeWidth="1.5" strokeDasharray="4 7" />
+        <circle className="vn-discovery-radius" cx="210" cy="166" r="76" fill="none" stroke="var(--rosso)" strokeWidth="1.5" strokeDasharray="4 7" />
 
         {venues.map((venue) => (
           <g key={venue.label} className="vn-map-venue" transform={`translate(${venue.x} ${venue.y})`}>
@@ -107,10 +107,10 @@ export default function NetworkVisual() {
         ))}
 
         <g className="vn-map-center" transform="translate(210 166)">
-          <circle r="30" fill="#1692A2" opacity="0.16" />
-          <circle r="18" fill="#1692A2" />
+          <circle r="30" fill="var(--rosso)" opacity="0.16" />
+          <circle r="18" fill="var(--rosso)" />
           <circle r="6" fill="#FFF8EA" />
-          <path d="M0 25l-6-9h12z" fill="#1692A2" />
+          <path d="M0 25l-6-9h12z" fill="var(--rosso)" />
           <rect x="-20" y="36" width="40" height="21" rx="10.5" fill="#101820" />
           <text y="50" textAnchor="middle" fill="#FFF8EA" fontSize="10" fontWeight="700">
             You

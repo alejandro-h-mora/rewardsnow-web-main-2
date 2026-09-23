@@ -29,6 +29,7 @@ import MissionPage from './MissionPage';
 import PartnersPage from './PartnersPage';
 import NewsPage from './NewsPage';
 import JoinPage from './JoinPage';
+import { Terms, Privacy } from './LegalPages';
 
 
 function FloatingThemeToggle() {
@@ -36,33 +37,30 @@ function FloatingThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      title={isDark ? 'Light mode' : 'Dark mode'}
+      aria-pressed={isDark}
+      aria-label={isDark ? 'Dark theme active. Switch to light theme.' : 'Light theme active. Switch to dark theme.'}
+      title="Toggle theme"
       style={{
         position: 'fixed',
         bottom: '20px',
         right: '20px',
         zIndex: 9999,
-        width: '40px',
-        height: '40px',
-        borderRadius: '50%',
-        border: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'}`,
-        background: isDark ? 'rgba(20,10,40,0.85)' : 'rgba(255,255,255,0.88)',
-        backdropFilter: 'blur(10px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(15,23,42,0.6)',
-        fontSize: '16px',
+        border: `1px solid var(--vn-line, var(--vn-card-border, rgba(128,128,128,0.3)))`,
+        background: 'var(--vn-surface, var(--vn-bg))',
+        color: 'var(--vn-text, #FFF8EA)',
+        borderRadius: 0,
+        padding: '10px 16px',
         cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: isDark ? '0 2px 16px rgba(0,0,0,0.4)' : '0 2px 16px rgba(0,0,0,0.12)',
-        padding: 0,
+        fontFamily: "'Inter', sans-serif",
+        fontSize: '11px',
+        fontWeight: 700,
+        letterSpacing: '0.12em',
         lineHeight: 1,
-        fontFamily: 'inherit',
       }}
     >
-      {isDark ? '☀' : '☾'}
+      <span style={{ color: isDark ? 'var(--blue-soft, #9FCBEF)' : 'inherit', opacity: isDark ? 1 : 0.5 }}>DARK</span>
+      <span style={{ opacity: 0.35 }}> / </span>
+      <span style={{ color: !isDark ? 'var(--blue-soft, #9FCBEF)' : 'inherit', opacity: !isDark ? 1 : 0.5 }}>LIGHT</span>
     </button>
   );
 }
@@ -175,6 +173,8 @@ function App() {
       <Route path="/partners" element={<PartnersPage />} />
       <Route path="/news" element={<NewsPage />} />
       <Route path="/join" element={<JoinPage />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
 
       {/* Auth */}
       <Route path="/signin" element={<Login onLogin={handleLogin} />} />

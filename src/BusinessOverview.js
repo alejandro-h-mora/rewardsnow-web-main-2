@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import FadeInSection from './FadeInSection';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
@@ -19,8 +18,7 @@ const WORKFLOW = [
 export default function BusinessOverview() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -66,7 +64,7 @@ export default function BusinessOverview() {
               'Independent businesses need practical tools for repeat visits, discovery, and clear reporting.',
               'A shared network can help customers discover participating businesses beyond the place where they first earned rewards.',
             ].map(point => (
-              <div key={point} style={{ background: 'var(--vn-card, #FFFFFF)', borderRadius: '12px', padding: '20px 22px', color: 'var(--vn-text-sub)', fontSize: '14px', lineHeight: 1.7 }}>
+              <div key={point} style={{ background: 'var(--vn-card, #FFFFFF)', borderRadius: 0, padding: '20px 22px', color: 'var(--vn-text-sub)', fontSize: '14px', lineHeight: 1.7 }}>
                 {point}
               </div>
             ))}
@@ -210,56 +208,56 @@ const s = {
   root: { minHeight: '100vh', background: 'var(--vn-bg, #FFF8EA)', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", position: 'relative', overflow: 'hidden' },
 
   hero: { position: 'relative', zIndex: 1 },
-  heroInner: { width: '100%', maxWidth: '900px', margin: '0 auto' },
-  eyebrow: { color: '#F2B84B', fontSize: '11px', fontWeight: '700', letterSpacing: '4px', margin: '0 0 20px', textTransform: 'uppercase' },
-  heroTitle: { color: 'var(--vn-text)', fontWeight: '900', lineHeight: 1.06, letterSpacing: '-0.03em', margin: '0 0 24px' },
-  goldBar: { width: '48px', height: '3px', background: '#F2B84B', borderRadius: '2px', marginBottom: '24px' },
+  heroInner: { width: '100%', maxWidth: '900px' },
+  eyebrow: { color: 'var(--vn-text)', opacity: 0.72, fontSize: '11px', fontWeight: '700', letterSpacing: '0.24em', margin: '0 0 20px', textTransform: 'uppercase' },
+  heroTitle: { color: 'var(--vn-text)', fontWeight: '900', lineHeight: 1.06, letterSpacing: '0.04em', textTransform: 'uppercase', fontFamily: "'Archivo','Inter',sans-serif", margin: '0 0 24px' },
+  goldBar: { width: '48px', height: '1px', background: 'var(--vn-line, var(--vn-card-border))', borderRadius: 0, marginBottom: '24px' },
   heroSub: { color: 'var(--vn-text-sub)', fontSize: '17px', lineHeight: 1.7, margin: '0 0 36px' },
-  ctaPrimary: { padding: '14px 28px', background: '#0E96CD', border: 'none', color: '#FFFFFF', borderRadius: '10px', fontSize: '15px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit' },
-  ctaGhost: { padding: '14px 28px', background: 'transparent', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.18))', color: 'var(--vn-text)', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
+  ctaPrimary: { padding: '14px 28px', background: 'var(--rosso)', border: 'none', color: '#FFF8EA', borderRadius: 0, fontSize: '15px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit' },
+  ctaGhost: { padding: '14px 28px', background: 'transparent', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.18))', color: 'var(--vn-text)', borderRadius: 0, fontSize: '15px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
 
   section: { position: 'relative', zIndex: 1 },
   sectionAlt: { position: 'relative', zIndex: 1, background: 'var(--vn-panel, #F7E8CF)' },
   ctaFooter: { position: 'relative', zIndex: 1 },
-  contentMax: { maxWidth: '900px', margin: '0 auto' },
+  contentMax: { maxWidth: '900px' },
 
-  tag: { color: '#F2B84B', fontSize: '11px', fontWeight: '700', letterSpacing: '4px', margin: '0 0 14px', textTransform: 'uppercase' },
-  h2: { color: 'var(--vn-text)', fontWeight: '900', lineHeight: 1.1, letterSpacing: '-0.03em', margin: '0 0 20px' },
-  goldLine: { width: '36px', height: '3px', background: '#F2B84B', borderRadius: '2px', marginBottom: '28px' },
+  tag: { color: 'var(--vn-text)', opacity: 0.72, fontSize: '11px', fontWeight: '700', letterSpacing: '0.24em', margin: '0 0 14px', textTransform: 'uppercase' },
+  h2: { color: 'var(--vn-text)', fontWeight: '900', lineHeight: 1.1, letterSpacing: '0.04em', textTransform: 'uppercase', fontFamily: "'Archivo','Inter',sans-serif", margin: '0 0 20px' },
+  goldLine: { width: '36px', height: '1px', background: 'var(--vn-line, var(--vn-card-border))', borderRadius: 0, marginBottom: '28px' },
   body: { color: 'var(--vn-text-sub)', fontSize: '16px', lineHeight: 1.8, margin: '0 0 20px' },
 
   statsGrid: { display: 'grid' },
-  stat: { background: 'var(--vn-card, #FFFFFF)', borderRadius: '14px', padding: '22px 18px' },
-  statValue: { color: '#F2B84B', fontWeight: '900', letterSpacing: '-0.03em', margin: '0 0 8px', lineHeight: 1, fontSize: '1.8rem' },
+  stat: { background: 'var(--vn-card, #FFFFFF)', borderRadius: 0, padding: '22px 18px' },
+  statValue: { color: 'var(--rosso)', fontWeight: '900', letterSpacing: '0.03em', margin: '0 0 8px', lineHeight: 1, fontSize: '1.8rem' },
   statLabel: { color: 'var(--vn-text-sub)', fontSize: '12px', lineHeight: 1.5, margin: 0 },
 
   grid: { display: 'grid' },
-  problemCard: { background: 'var(--vn-card, #FFFFFF)', borderRadius: '12px', padding: '20px' },
+  problemCard: { background: 'var(--vn-card, #FFFFFF)', borderRadius: 0, padding: '20px' },
   problem: { color: '#f87171', fontSize: '13px', fontWeight: '700', margin: '0 0 8px' },
   solution: { color: 'var(--vn-text-sub)', fontSize: '13px', lineHeight: 1.6, margin: 0 },
 
   workflowGrid: { display: 'grid' },
-  workflowCard: { background: 'var(--vn-card, #FFFFFF)', borderRadius: '16px', padding: '28px 24px' },
-  workflowNum: { display: 'inline-block', color: '#F2B84B', fontSize: '11px', fontWeight: '800', letterSpacing: '2px', marginBottom: '14px', background: 'rgba(242,184,75,0.12)', padding: '4px 10px', borderRadius: '20px' },
-  workflowTitle: { color: 'var(--vn-text)', fontSize: '16px', fontWeight: '800', margin: '0 0 10px', letterSpacing: '-0.01em' },
+  workflowCard: { background: 'var(--vn-card, #FFFFFF)', borderRadius: 0, padding: '28px 24px' },
+  workflowNum: { display: 'inline-block', color: 'var(--rosso)', fontSize: '11px', fontWeight: '800', letterSpacing: '2px', marginBottom: '14px', background: 'var(--vn-surface)', padding: '4px 10px', borderRadius: '20px' },
+  workflowTitle: { color: 'var(--vn-text)', fontSize: '16px', fontWeight: '800', margin: '0 0 10px', letterSpacing: '0.01em' },
   workflowDesc: { color: 'var(--vn-text-sub)', fontSize: '14px', lineHeight: 1.7, margin: 0 },
 
-  empCallout: { background: 'rgba(242,184,75,0.08)', border: '1px solid rgba(242,184,75,0.22)', borderRadius: '16px', padding: '24px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px', flexWrap: 'wrap' },
+  empCallout: { background: 'rgba(242,184,75,0.08)', border: '1px solid rgba(242,184,75,0.22)', borderRadius: 0, padding: '24px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px', flexWrap: 'wrap' },
   empCalloutTitle: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: '0 0 6px' },
   empCalloutDesc: { color: 'var(--vn-text-sub)', fontSize: '13px', lineHeight: 1.6, margin: 0, maxWidth: '480px' },
-  empCalloutBtn: { padding: '12px 22px', background: '#0E96CD', border: 'none', color: '#FFFFFF', borderRadius: '10px', fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer', fontFamily: 'inherit' },
+  empCalloutBtn: { padding: '12px 22px', background: 'var(--rosso)', border: 'none', color: '#FFF8EA', borderRadius: 0, fontSize: '14px', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer', fontFamily: 'inherit' },
 
   stepsGrid: { display: 'grid' },
-  stepCard: { background: 'var(--vn-card, #FFFFFF)', borderRadius: '14px', padding: '24px 20px' },
-  stepNum: { display: 'inline-block', color: '#F2B84B', fontSize: '11px', fontWeight: '800', letterSpacing: '2px', marginBottom: '12px' },
+  stepCard: { background: 'var(--vn-card, #FFFFFF)', borderRadius: 0, padding: '24px 20px' },
+  stepNum: { display: 'inline-block', color: 'var(--rosso)', fontSize: '11px', fontWeight: '800', letterSpacing: '2px', marginBottom: '12px' },
   stepTitle: { color: 'var(--vn-text)', fontSize: '15px', fontWeight: '700', margin: '0 0 8px' },
   stepDesc: { color: 'var(--vn-text-sub)', fontSize: '13px', lineHeight: 1.6, margin: 0 },
 
-  empSection: { display: 'flex', alignItems: 'flex-start', position: 'relative', zIndex: 1, maxWidth: '900px', margin: '0 auto' },
-  empBigBtn: { display: 'inline-block', padding: '15px 32px', background: '#0E96CD', border: 'none', color: '#FFFFFF', borderRadius: '10px', fontSize: '15px', fontWeight: '700', marginBottom: '10px', cursor: 'pointer', fontFamily: 'inherit' },
+  empSection: { display: 'flex', alignItems: 'flex-start', position: 'relative', zIndex: 1, maxWidth: '900px' },
+  empBigBtn: { display: 'inline-block', padding: '15px 32px', background: 'var(--rosso)', border: 'none', color: '#FFF8EA', borderRadius: 0, fontSize: '15px', fontWeight: '700', marginBottom: '10px', cursor: 'pointer', fontFamily: 'inherit' },
   empLinkNote: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0 },
-  empBadgeBox: { background: 'var(--vn-card, #FFFFFF)', borderRadius: '16px', padding: '24px 28px', minWidth: '240px', flexShrink: 0 },
-  empBadgeLabel: { color: '#F2B84B', fontSize: '10px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', margin: '0 0 10px' },
+  empBadgeBox: { background: 'var(--vn-card, #FFFFFF)', borderRadius: 0, padding: '24px 28px', minWidth: '240px', flexShrink: 0 },
+  empBadgeLabel: { color: 'var(--vn-text)', fontSize: '10px', fontWeight: '700', letterSpacing: '3px', textTransform: 'uppercase', margin: '0 0 10px' },
   empBadgeUrl: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: '0 0 8px', wordBreak: 'break-all' },
   empBadgeHint: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0 },
 

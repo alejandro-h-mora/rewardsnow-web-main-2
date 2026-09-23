@@ -1,19 +1,16 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
 
-const CYAN   = '#1692A2';
-const LAGOON = '#0E96CD';
-const YELLOW = '#F8C922';
+const CYAN = 'var(--rosso)';
+const LAGOON = 'var(--rosso)';
 
 export default function NetworkPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
 
   useEffect(() => {
     document.title = 'Network — Veniar';
@@ -40,7 +37,7 @@ export default function NetworkPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>NETWORK</p>
 
@@ -71,13 +68,13 @@ export default function NetworkPage() {
           <div
             style={{
               maxWidth: '720px',
-              margin: '0 auto',
-              padding: isMobile ? '0 24px' : '0 8%',
+                            padding: isMobile ? '0 24px' : '0 8%',
             }}
           >
             <p style={s.body}>
-              Currently Building... Check back in for a full partner directory and
-              interactive map. Any questions,{' '}
+              Sign in to browse the interactive map of participating businesses near
+              you. We're still growing the network — check back often as more local
+              businesses join. Any questions,{' '}
               <Link to="/contact" style={s.link}>
                 contact support
               </Link>
@@ -85,13 +82,19 @@ export default function NetworkPage() {
             </p>
 
             {/* CTA */}
-            <div style={{ marginTop: '40px' }}>
+            <div style={{ marginTop: '40px', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <button
                 className="vn-cta-primary"
                 style={s.btnPrimary}
                 onClick={() => navigate('/map')}
               >
                 View the map
+              </button>
+              <button
+                className="vn2-btn vn2-btn-outline"
+                onClick={() => navigate('/join')}
+              >
+                Join Veniar
               </button>
             </div>
           </div>
@@ -105,10 +108,10 @@ export default function NetworkPage() {
 
 const s = {
   eyebrow: {
-    color: YELLOW,
+    color: 'var(--vn-text)',
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '4px',
+    letterSpacing: '0.24em',
     textTransform: 'uppercase',
     margin: '0 0 20px',
   },
@@ -116,14 +119,16 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '900',
     lineHeight: 1.06,
-    letterSpacing: '-0.03em',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontFamily: "'Archivo','Inter',sans-serif",
     margin: '0 0 24px',
   },
   goldBar: {
     width: '48px',
-    height: '3px',
-    background: YELLOW,
-    borderRadius: '2px',
+    height: '1px',
+    background: 'var(--vn-line, var(--vn-card-border))',
+    borderRadius: 0,
     marginBottom: '28px',
   },
   body: {
@@ -142,7 +147,7 @@ const s = {
     background: LAGOON,
     border: 'none',
     color: '#FFFFFF',
-    borderRadius: '9px',
+    borderRadius: 0,
     fontSize: '15px',
     fontWeight: '700',
     fontFamily: 'inherit',

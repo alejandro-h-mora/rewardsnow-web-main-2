@@ -1,99 +1,84 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
-
-const CYAN   = '#1692A2';
-const LAGOON = '#0E96CD';
 
 const NAV_LINKS = [
   { label: 'Services',     path: '/services' },
-  { label: 'About Us',       path: '/aboutus' },
+  { label: 'About Us',     path: '/aboutus' },
   { label: 'For Business', path: '/business-overview' },
   { label: 'Network',      path: '/network' },
 ];
 
-const ALL_NAV_ITEMS = [
-  { label: 'Services',            path: '/services' },
-  { label: 'About Us',              path: '/aboutus' },
-  { label: 'For Business',        path: '/business-overview' },
-  { label: 'Network',             path: '/network' },
-  { label: 'Merchant Dashboard',  path: '/merchant-dashboard' },
-  { label: 'Customer App',        path: '/customer-app' },
-  { label: 'Pricing',             path: '/pricing' },
-  { label: 'Support',             path: '/support' },
-];
-
-export default function VeniarNav() {
+export default function VeniarNav({ solidFromStart = false }) {
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
 
-  const [scrolled, setScrolled] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(solidFromStart);
+  const [hidden, setHidden] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const closeButtonRef = useRef(null);
+  const lastScrollY = useRef(0);
 
-  const logoColor = isDark ? '#3DD6E8' : CYAN;
-  const activeColor = isDark ? '#3DD6E8' : LAGOON;
-
-  // Collapse the wordmark while scrolling down, and reveal it as soon as the
-  // user reverses direction. Keep it expanded near the top of the page.
+  // Header goes solid with a hairline border after 80px of scroll, and
+  // tucks itself away while scrolling down, reappearing as soon as you
+  // scroll back up.
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-
-    setScrolled(lastScrollY > 60);
-
+    lastScrollY.current = window.scrollY;
     const onScroll = () => {
-      const currentScrollY = window.scrollY;
+      const y = window.scrollY;
+      if (!solidFromStart) setScrolled(y > 80);
 
-      if (currentScrollY <= 60 || currentScrollY < lastScrollY) {
-        setScrolled(false);
-      } else if (currentScrollY > lastScrollY) {
-        setScrolled(true);
+      if (y < 80) {
+        setHidden(false);
+      } else if (y > lastScrollY.current + 4) {
+        setHidden(true);
+      } else if (y < lastScrollY.current - 4) {
+        setHidden(false);
       }
-
-      lastScrollY = currentScrollY;
+      lastScrollY.current = y;
     };
-
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [solidFromStart]);
 
-  // Close drawer on route change
   useEffect(() => {
-    setDrawerOpen(false);
+    setMenuOpen(false);
   }, [location.pathname]);
 
-  // Close drawer on Escape key
   useEffect(() => {
-    if (!drawerOpen) return;
-    const onKey = (e) => { if (e.key === 'Escape') setDrawerOpen(false); };
+    if (!menuOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [drawerOpen]);
+  }, [menuOpen]);
 
-  // Lock body scroll when drawer is open
   useEffect(() => {
-    document.body.style.overflow = drawerOpen ? 'hidden' : '';
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [drawerOpen]);
+  }, [menuOpen]);
 
-  // Focus close button when drawer opens
   useEffect(() => {
-    if (drawerOpen && closeButtonRef.current) {
-      closeButtonRef.current.focus();
-    }
-  }, [drawerOpen]);
+    if (menuOpen && closeButtonRef.current) closeButtonRef.current.focus();
+  }, [menuOpen]);
 
   const isActive = (path) => location.pathname === path;
-
   const go = (path) => {
     navigate(path);
-    setDrawerOpen(false);
+    setMenuOpen(false);
   };
 
-  /* ── Styles ─────────────────────────────────────────────────────────── */
+  // The bar has two fixed looks, neither of which follows the site's
+  // dark/light toggle: transparent-over-hero always reads light (cream
+  // text) since the hero scrim is dark in both themes, and scrolled-solid
+  // always reads light-theme (cream bg, dark text) once it picks up its
+  // own background. Letting either follow the theme risks dark-on-dark
+  // (or light-on-light) text with no contrast against its own backdrop.
+  const scrolledText = '#141210';
+  const unscrolledText = '#FFF8EA';
+  const textColor = scrolled ? scrolledText : unscrolledText;
+  const activeColor = scrolled ? 'var(--blue-hover, #3D8FCC)' : 'var(--blue-soft)';
 
   const navStyle = {
     position: 'fixed',
@@ -101,256 +86,89 @@ export default function VeniarNav() {
     left: 0,
     right: 0,
     zIndex: 1000,
-    height: '64px',
+    height: '72px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '0 24px',
-    background: 'var(--vn-nav-bg)',
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    borderBottom: '1px solid var(--vn-nav-border)',
+    background: scrolled ? 'rgba(255,248,234,0.92)' : 'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 100%)',
+    backdropFilter: scrolled ? 'blur(12px)' : 'none',
+    WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
+    borderBottom: scrolled ? '1px solid rgba(20,18,16,0.14)' : '1px solid transparent',
+    transform: hidden && !menuOpen ? 'translateY(-100%)' : 'translateY(0)',
+    transition: 'background-color 300ms var(--ease-cinematic), border-color 300ms var(--ease-cinematic), transform 350ms var(--ease-cinematic)',
   };
 
-  const logoWrapStyle = {
-    display: 'flex',
-    alignItems: 'center',
+  const wordmarkStyle = {
+    fontFamily: "'Archivo', 'Inter', sans-serif",
+    fontStretch: 'expanded',
+    fontWeight: 800,
+    fontSize: '19px',
+    letterSpacing: '0.08em',
+    color: textColor,
     cursor: 'pointer',
     userSelect: 'none',
-    flexShrink: 0,
-  };
-
-  const logoVStyle = {
-    fontSize: '20px',
-    fontWeight: 800,
-    color: logoColor,
-    letterSpacing: '-0.5px',
-    lineHeight: 1,
-  };
-
-  const logoEniarStyle = {
-    fontSize: '20px',
-    fontWeight: 800,
-    color: logoColor,
-    letterSpacing: '-0.5px',
-    lineHeight: 1,
-    overflow: 'hidden',
-    display: 'inline-block',
-    opacity: scrolled ? 0 : 1,
-    maxWidth: scrolled ? '0px' : '80px',
-    transition: 'opacity 0.65s ease, max-width 0.75s cubic-bezier(0.16,1,0.3,1)',
-    whiteSpace: 'nowrap',
-  };
-
-  const desktopCenterStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    position: 'absolute',
-    left: '50%',
-    transform: 'translateX(-50%)',
-  };
-
-  const desktopRightStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    flexShrink: 0,
+    background: 'none',
+    border: 'none',
+    padding: 0,
   };
 
   const navLinkStyle = (path) => ({
     background: 'none',
     border: 'none',
-    padding: '6px 12px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: isActive(path) ? 600 : 500,
-    color: isActive(path) ? activeColor : 'var(--vn-text)',
+    padding: '8px 14px',
+    fontSize: '12px',
+    fontWeight: 700,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: isActive(path) ? activeColor : textColor,
     cursor: 'pointer',
-    fontFamily: 'inherit',
+    fontFamily: "'Inter', sans-serif",
     whiteSpace: 'nowrap',
   });
 
   const loginBtnStyle = {
     background: 'none',
     border: 'none',
-    padding: '6px 12px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: 500,
-    color: 'var(--vn-text)',
+    padding: '8px 14px',
+    fontSize: '12px',
+    fontWeight: 700,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: textColor,
     cursor: 'pointer',
-    fontFamily: 'inherit',
+    fontFamily: "'Inter', sans-serif",
     whiteSpace: 'nowrap',
   };
 
-  const joinBtnStyle = {
-    background: LAGOON,
-    border: 'none',
-    padding: '8px 16px',
-    borderRadius: '7px',
-    fontSize: '14px',
-    fontWeight: 600,
-    color: '#ffffff',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    whiteSpace: 'nowrap',
-  };
-
-  const hamburgerStyle = {
+  const menuBtnStyle = {
     background: 'none',
-    border: 'none',
-    padding: '8px',
-    borderRadius: '6px',
+    border: `1px solid ${scrolled ? 'rgba(20,18,16,0.18)' : 'rgba(255,248,234,0.4)'}`,
+    padding: '9px 18px',
+    fontSize: '12px',
+    fontWeight: 700,
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: textColor,
     cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '5px',
-    alignItems: 'center',
-    justifyContent: 'center',
-  };
-
-  const hamburgerLineStyle = {
-    display: 'block',
-    width: '22px',
-    height: '2px',
-    borderRadius: '2px',
-    background: 'var(--vn-text)',
-  };
-
-  const overlayStyle = {
-    position: 'fixed',
-    inset: 0,
-    zIndex: 1100,
-    background: 'rgba(7,19,26,0.60)',
-    opacity: drawerOpen ? 1 : 0,
-    pointerEvents: drawerOpen ? 'all' : 'none',
-    transition: 'opacity 0.25s ease',
-  };
-
-  const drawerStyle = {
-    position: 'fixed',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1200,
-    width: '280px',
-    maxWidth: '85vw',
-    background: isDark ? '#06141C' : '#FFFFFF',
-    boxShadow: '-8px 0 40px rgba(7,19,26,0.28)',
-    display: 'flex',
-    flexDirection: 'column',
-    transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)',
-    transition: 'transform 0.35s cubic-bezier(0.16,1,0.3,1)',
-  };
-
-  const drawerHeaderStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '18px 20px 16px',
-    borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(16,24,32,0.10)'}`,
-  };
-
-  const drawerLogoStyle = {
-    fontSize: '19px',
-    fontWeight: 800,
-    color: logoColor,
-    letterSpacing: '-0.5px',
-  };
-
-  const closeBtnStyle = {
-    background: 'none',
-    border: 'none',
-    padding: '6px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    color: 'var(--vn-text)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '22px',
-    lineHeight: 1,
-    fontFamily: 'inherit',
-  };
-
-  const drawerBodyStyle = {
-    flex: 1,
-    overflowY: 'auto',
-    padding: '12px 12px 20px',
-  };
-
-  const drawerItemStyle = (path) => ({
-    display: 'block',
-    width: '100%',
-    textAlign: 'left',
-    background: isActive(path)
-      ? (isDark ? 'rgba(61,214,232,0.10)' : 'rgba(0,169,200,0.07)')
-      : 'none',
-    border: 'none',
-    padding: '11px 12px',
-    borderRadius: '7px',
-    fontSize: '15px',
-    fontWeight: isActive(path) ? 600 : 500,
-    color: isActive(path) ? activeColor : 'var(--vn-text)',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    marginBottom: '2px',
-  });
-
-  const drawerAuthStyle = {
-    padding: '12px 12px 4px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(16,24,32,0.10)'}`,
-  };
-
-  const drawerLoginStyle = {
-    background: 'none',
-    border: `1px solid ${isDark ? 'rgba(255,248,234,0.18)' : 'rgba(16,24,32,0.14)'}`,
-    padding: '10px 16px',
-    borderRadius: '7px',
-    fontSize: '14px',
-    fontWeight: 500,
-    color: 'var(--vn-text)',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    textAlign: 'center',
-  };
-
-  const drawerJoinStyle = {
-    background: LAGOON,
-    border: 'none',
-    padding: '10px 16px',
-    borderRadius: '7px',
-    fontSize: '14px',
-    fontWeight: 600,
-    color: '#ffffff',
-    cursor: 'pointer',
-    fontFamily: 'inherit',
-    textAlign: 'center',
+    fontFamily: "'Inter', sans-serif",
   };
 
   return (
     <>
-      <nav style={navStyle}>
-        {/* Logo */}
-        <div
-          style={logoWrapStyle}
+      <a href="#main-content" className="vn-skip-link">Skip to content</a>
+
+      <nav style={navStyle} aria-label="Primary">
+        <button
+          style={wordmarkStyle}
           onClick={() => navigate('/')}
-          role="link"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && navigate('/')}
           aria-label="Veniar home"
         >
-          <span style={logoVStyle}>V</span>
-          <span style={logoEniarStyle}>eniar</span>
-        </div>
+          VENIAR
+        </button>
 
-        {/* Desktop center nav */}
         {!isMobile && (
-          <div style={desktopCenterStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
             {NAV_LINKS.map((item) => (
               <button
                 key={item.path}
@@ -364,9 +182,8 @@ export default function VeniarNav() {
           </div>
         )}
 
-        {/* Desktop right actions */}
         {!isMobile && (
-          <div style={desktopRightStyle}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button
               className="vn-nav-btn"
               style={loginBtnStyle}
@@ -375,8 +192,7 @@ export default function VeniarNav() {
               Log in
             </button>
             <button
-              className="vn-cta-primary"
-              style={joinBtnStyle}
+              className="vn2-btn vn2-btn-primary"
               onClick={() => navigate('/join')}
             >
               Join Veniar
@@ -384,79 +200,111 @@ export default function VeniarNav() {
           </div>
         )}
 
-        {/* Mobile hamburger */}
         {isMobile && (
           <button
-            style={hamburgerStyle}
-            onClick={() => setDrawerOpen(true)}
+            style={menuBtnStyle}
+            onClick={() => setMenuOpen(true)}
             aria-label="Open navigation menu"
-            aria-expanded={drawerOpen}
-            aria-controls="veniar-nav-drawer"
+            aria-expanded={menuOpen}
+            aria-controls="veniar-mobile-menu"
           >
-            <span style={hamburgerLineStyle} />
-            <span style={hamburgerLineStyle} />
-            <span style={hamburgerLineStyle} />
+            Menu
           </button>
         )}
       </nav>
 
-      {/* Mobile drawer overlay */}
+      {/* Mobile full-screen menu overlay */}
       {isMobile && (
         <div
-          style={overlayStyle}
-          onClick={() => setDrawerOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Mobile drawer */}
-      {isMobile && (
-        <div
-          id="veniar-nav-drawer"
+          id="veniar-mobile-menu"
           role="dialog"
           aria-modal="true"
           aria-label="Navigation menu"
-          style={drawerStyle}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1200,
+            background: 'var(--vn-bg)',
+            display: 'flex',
+            flexDirection: 'column',
+            transform: menuOpen ? 'translateY(0)' : 'translateY(-100%)',
+            transition: 'transform 450ms var(--ease-cinematic)',
+          }}
         >
-          {/* Drawer header */}
-          <div style={drawerHeaderStyle}>
-            <span style={drawerLogoStyle}>Veniar</span>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 24px',
+            height: 72,
+            borderBottom: '1px solid var(--vn-line, var(--vn-card-border))',
+          }}>
+            <span style={wordmarkStyle}>VENIAR</span>
             <button
               ref={closeButtonRef}
-              style={closeBtnStyle}
-              onClick={() => setDrawerOpen(false)}
+              onClick={() => setMenuOpen(false)}
               aria-label="Close navigation menu"
+              style={{
+                background: 'none',
+                border: '1px solid var(--vn-line, var(--vn-card-border))',
+                color: 'var(--vn-text)',
+                padding: '9px 18px',
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                fontFamily: "'Inter', sans-serif",
+              }}
             >
-              ✕
+              Close
             </button>
           </div>
 
-          {/* Drawer body */}
-          <div style={drawerBodyStyle}>
-            {ALL_NAV_ITEMS.map((item) => (
+          <div style={{ flex: 1, overflowY: 'auto', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[...NAV_LINKS, { label: 'Pricing', path: '/pricing' }, { label: 'Support', path: '/support' }].map((item, i) => (
               <button
                 key={item.path}
-                className="vn-nav-btn"
-                style={drawerItemStyle(item.path)}
                 onClick={() => go(item.path)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: 16,
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: '1px solid var(--vn-line, var(--vn-card-border))',
+                  padding: '20px 0',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  fontFamily: "'Archivo', 'Inter', sans-serif",
+                  fontStretch: 'expanded',
+                }}
               >
-                {item.label}
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--vn-text-sub)', letterSpacing: '0.08em' }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span style={{
+                  fontSize: 'clamp(1.6rem, 9vw, 2.4rem)',
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.02em',
+                  color: isActive(item.path) ? 'var(--blue-soft)' : 'var(--vn-text)',
+                }}>
+                  {item.label}
+                </span>
               </button>
             ))}
           </div>
 
-          {/* Drawer auth actions */}
-          <div style={drawerAuthStyle}>
+          <div style={{ padding: '20px 24px 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
             <button
-              className="vn-nav-btn"
-              style={drawerLoginStyle}
+              className="vn2-btn vn2-btn-outline"
               onClick={() => go('/signin')}
             >
               Log in
             </button>
             <button
-              className="vn-cta-primary"
-              style={drawerJoinStyle}
+              className="vn2-btn vn2-btn-primary"
               onClick={() => go('/join')}
             >
               Join Veniar

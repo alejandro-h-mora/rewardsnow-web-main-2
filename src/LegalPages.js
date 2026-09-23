@@ -1,24 +1,46 @@
-// TermsAndPrivacy.jsx — put this in src/
-// Add routes: <Route path="/terms" element={<Terms />} />
-//             <Route path="/privacy" element={<Privacy />} />
+import { useEffect } from 'react';
+import { useIsMobile } from './useIsMobile';
+import VeniarNav from './VeniarNav';
+import VeniarFooter from './VeniarFooter';
 
-const PageShell = ({ title, children }) => (
-  <div style={s.root}>
-    <nav style={s.nav}>
-      <a href="/" style={s.brand}>Veniar</a>
-    </nav>
-    <div style={s.body}>
-      <h1 style={s.title}>{title}</h1>
-      <p style={s.updated}>Last updated: April 2026</p>
-      {children}
+const PageShell = ({ title, updated, children }) => {
+  const isMobile = useIsMobile();
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--vn-bg)', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}>
+      <VeniarNav />
+      <main>
+        <section style={{ background: '#0E0D0C', paddingTop: isMobile ? 120 : 160, paddingBottom: isMobile ? 56 : 80 }}>
+          <div style={{ maxWidth: 720, padding: isMobile ? '0 24px' : '0 8%' }}>
+            <p style={s.eyebrow}>LEGAL</p>
+            <h1 style={{ ...s.h1, fontSize: isMobile ? '2.4rem' : '3.6rem' }}>{title}</h1>
+            <div style={s.hairline} />
+            <p style={s.updated}>Last updated: April 2026</p>
+          </div>
+        </section>
+        <section style={{ background: 'var(--vn-panel, #F7E8CF)', padding: isMobile ? '48px 0 80px' : '64px 0 100px' }}>
+          <div style={{ maxWidth: 720, padding: isMobile ? '0 24px' : '0 8%' }}>
+            {children}
+          </div>
+        </section>
+      </main>
+      <VeniarFooter />
     </div>
-    <footer style={s.footer}>
-      <p style={s.footerText}>Veniar is a product of RewardsNow. © 2026 RewardsNow, Inc. All rights reserved.</p>
-    </footer>
+  );
+};
+
+const Section = ({ title, children }) => (
+  <div style={s.section}>
+    <h2 style={s.sectionTitle}>{title}</h2>
+    <p style={s.sectionBody}>{children}</p>
   </div>
 );
 
 export function Terms() {
+  useEffect(() => {
+    document.title = 'Terms of Service — Veniar';
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <PageShell title="Terms of Service">
       <Section title="1. Acceptance of Terms">
@@ -50,6 +72,11 @@ export function Terms() {
 }
 
 export function Privacy() {
+  useEffect(() => {
+    document.title = 'Privacy Policy — Veniar';
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <PageShell title="Privacy Policy">
       <Section title="1. What We Collect">
@@ -77,23 +104,48 @@ export function Privacy() {
   );
 }
 
-const Section = ({ title, children }) => (
-  <div style={s.section}>
-    <h2 style={s.sectionTitle}>{title}</h2>
-    <p style={s.sectionBody}>{children}</p>
-  </div>
-);
-
 const s = {
-  root: { minHeight: '100vh', background: 'var(--rn-bg)', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: 'flex', flexDirection: 'column' },
-  nav: { height: '60px', display: 'flex', alignItems: 'center', padding: '0 40px', borderBottom: '1px solid var(--rn-nav-border)', background: 'var(--rn-nav-bg)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 100 },
-  brand: { color: '#f59e0b', fontSize: '15px', fontWeight: '800', textDecoration: 'none', letterSpacing: '-0.01em' },
-  body: { maxWidth: '680px', margin: '0 auto', padding: '64px 24px', flex: 1 },
-  title: { color: 'var(--rn-text)', fontSize: '2rem', fontWeight: '900', margin: '0 0 8px', letterSpacing: '-0.03em' },
-  updated: { color: 'var(--rn-text-faint)', fontSize: '13px', margin: '0 0 48px' },
+  eyebrow: {
+    color: '#FFF8EA',
+    opacity: 0.85,
+    fontSize: '11px',
+    fontWeight: '700',
+    letterSpacing: '0.24em',
+    textTransform: 'uppercase',
+    margin: '0 0 20px',
+  },
+  h1: {
+    color: '#FFF8EA',
+    fontWeight: 800,
+    lineHeight: 1.06,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontFamily: "'Archivo','Inter',sans-serif",
+    margin: '0 0 24px',
+  },
+  hairline: {
+    width: '48px',
+    height: '1px',
+    background: 'rgba(255,248,234,0.30)',
+    marginBottom: '20px',
+  },
+  updated: {
+    color: 'rgba(255,248,234,0.55)',
+    fontSize: '13px',
+    margin: 0,
+  },
   section: { marginBottom: '32px' },
-  sectionTitle: { color: 'var(--rn-text)', fontSize: '15px', fontWeight: '600', margin: '0 0 8px' },
-  sectionBody: { color: 'var(--rn-text-sub)', fontSize: '14px', lineHeight: 1.8, margin: 0 },
-  footer: { borderTop: '1px solid var(--rn-section-border)', padding: '20px 40px', textAlign: 'center', background: 'var(--rn-section-alt)' },
-  footerText: { color: 'var(--rn-text-faint)', fontSize: '12px', margin: 0 },
+  sectionTitle: {
+    color: 'var(--vn-text)',
+    fontSize: '15px',
+    fontWeight: '700',
+    letterSpacing: '0.02em',
+    margin: '0 0 8px',
+  },
+  sectionBody: {
+    color: 'var(--vn-text-sub)',
+    fontSize: '15px',
+    lineHeight: 1.8,
+    margin: 0,
+  },
 };

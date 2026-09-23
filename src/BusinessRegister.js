@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { API } from './config';
 import { useIsMobile } from './useIsMobile';
 
-const BLUE = '#0E96CD';
+const BLUE = 'var(--rosso)';
 
 const TIERS = [
   {
@@ -341,7 +341,7 @@ const s = {
   leftInner: { maxWidth: '440px', width: '100%', position: 'relative', zIndex: 2 },
   backLink: { background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: '500', cursor: 'pointer', padding: 0, marginBottom: '48px', display: 'block' },
   brand: { color: '#f59e0b', fontSize: '12px', fontWeight: '700', letterSpacing: '4px', marginBottom: '48px', textTransform: 'uppercase' },
-  headline: { color: '#fff', fontSize: '3rem', fontWeight: '900', lineHeight: 1.06, letterSpacing: '-0.03em', margin: '0 0 20px' },
+  headline: { color: '#fff', fontSize: '2.8rem', fontWeight: 800, lineHeight: 1.06, letterSpacing: '0.02em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif", margin: '0 0 20px' },
   tagline: { color: 'rgba(255,255,255,0.5)', fontSize: '15px', lineHeight: 1.7, margin: '0 0 48px' },
   steps: { display: 'flex', flexDirection: 'column', gap: '16px' },
   stepRow: { display: 'flex', alignItems: 'center', gap: '12px' },
@@ -354,33 +354,33 @@ const s = {
   mobileStepDots: { display: 'flex', gap: '6px' },
   stepDot: { width: '8px', height: '8px', borderRadius: '50%', transition: 'background 0.2s' },
   form: { width: '100%', maxWidth: '400px', margin: '0 auto', boxSizing: 'border-box' },
-  formTitle: { color: 'var(--vn-text)', fontSize: '1.6rem', fontWeight: '900', margin: '0 0 6px', letterSpacing: '-0.03em' },
-  formSub: { color: '#0E96CD', fontSize: '13px', margin: '0 0 28px' },
+  formTitle: { color: 'var(--vn-text)', fontSize: '1.6rem', fontWeight: 800, margin: '0 0 6px', letterSpacing: '0.03em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
+  formSub: { color: 'var(--rosso)', fontSize: '13px', margin: '0 0 28px' },
   field: { marginBottom: '16px' },
-  label: { display: 'block', color: '#b45309', fontSize: '10px', fontWeight: '700', marginBottom: '7px', letterSpacing: '2px', textTransform: 'uppercase' },
-  input: { width: '100%', padding: '11px 14px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', borderRadius: '8px', fontSize: '14px', color: 'var(--vn-text)', background: 'var(--vn-bg, #FFF8EA)', outline: 'none', boxSizing: 'border-box', marginBottom: 0 },
+  label: { display: 'block', color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', marginBottom: '7px', letterSpacing: '2px', textTransform: 'uppercase' },
+  input: { width: '100%', padding: '11px 14px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', borderRadius: 0, fontSize: '14px', color: 'var(--vn-text)', background: 'var(--vn-bg, #FFF8EA)', outline: 'none', boxSizing: 'border-box', marginBottom: 0 },
   addrHint: { color: '#6b7280', fontSize: '12px', margin: '0 0 10px', lineHeight: 1.5 },
   addrCityRow: { display: 'flex', gap: '8px', marginBottom: '8px' },
   addrLocateRow: { display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' },
-  addrPreview: { flex: 1, fontSize: '12px', color: '#374151', padding: '9px 12px', background: 'var(--vn-surface, #F5F5F4)', border: '1.5px dashed var(--vn-card-border, rgba(16,24,32,0.18))', borderRadius: '8px', wordBreak: 'break-word', minHeight: '20px', display: 'block' },
-  geocodeBtn: { padding: '11px 14px', background: 'rgba(14,150,205,0.10)', border: '2px solid rgba(14,150,205,0.25)', borderRadius: '8px', color: '#0E96CD', fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 },
+  addrPreview: { flex: 1, fontSize: '12px', color: '#374151', padding: '9px 12px', background: 'var(--vn-surface, #F5F5F4)', border: '1.5px dashed var(--vn-card-border, rgba(16,24,32,0.18))', borderRadius: 0, wordBreak: 'break-word', minHeight: '20px', display: 'block' },
+  geocodeBtn: { padding: '11px 14px', background: 'var(--vn-surface)', border: '1px solid var(--rosso)', borderRadius: 0, color: 'var(--rosso)', fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 },
   geocodeConfirm: { color: '#16a34a', fontSize: '12px', margin: '6px 0 0' },
   tierList: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  tierCard: { border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', borderRadius: '10px', padding: '14px 16px', cursor: 'pointer', position: 'relative', background: 'var(--vn-surface, #F5F5F4)' },
+  tierCard: { border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', position: 'relative', background: 'var(--vn-surface, #F5F5F4)' },
   tierCardSelected: { borderColor: BLUE, background: 'rgba(14,150,205,0.07)' },
   tierHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' },
   tierName: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '600', margin: 0 },
-  tierBadge: { background: '#0E96CD', color: '#fff', fontSize: '10px', fontWeight: '700', padding: '2px 7px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' },
+  tierBadge: { background: 'var(--rosso)', color: '#FFF8EA', fontSize: '10px', fontWeight: '700', padding: '2px 7px', borderRadius: 0, marginTop: '4px', display: 'inline-block' },
   tierPrice: { color: 'var(--vn-text)', fontSize: '16px', fontWeight: '700', margin: 0 },
   tierPeriod: { color: '#9ca3af', fontSize: '12px', fontWeight: '400' },
   tierDesc: { color: '#6b7280', fontSize: '12px', lineHeight: 1.5, margin: 0, paddingRight: '24px' },
   tierRadio: { position: 'absolute', top: '16px', right: '16px', width: '16px', height: '16px', borderRadius: '50%', border: '2px solid #d1d5db', background: '#fff' },
   tierRadioSelected: { borderColor: BLUE, background: BLUE },
-  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '10px 14px', margin: '0 0 14px' },
-  submitBtn: { width: '100%', padding: '12px', background: '#0E96CD', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' },
-  backBtn: { padding: '12px 16px', background: 'transparent', color: 'var(--vn-text)', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.18))', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
+  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 0, padding: '10px 14px', margin: '0 0 14px' },
+  submitBtn: { width: '100%', padding: '12px', background: 'var(--rosso)', color: '#FFF8EA', border: 'none', borderRadius: 0, fontSize: '14px', fontWeight: '700', cursor: 'pointer' },
+  backBtn: { padding: '12px 16px', background: 'transparent', color: 'var(--vn-text)', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.18))', borderRadius: 0, fontSize: '14px', fontWeight: '600', cursor: 'pointer' },
   successScreen: { textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' },
-  successIcon: { width: '64px', height: '64px', borderRadius: '50%', background: '#0E96CD', color: '#fff', fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  successIcon: { width: '64px', height: '64px', borderRadius: '50%', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   successMsg: { color: 'var(--vn-text-sub, #5F6B73)', fontSize: '14px', lineHeight: 1.7, margin: 0 },
   successTier: { color: 'var(--vn-text-sub, #5F6B73)', fontSize: '13px', margin: 0 },
 };
