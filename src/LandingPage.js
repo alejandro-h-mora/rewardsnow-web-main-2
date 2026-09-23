@@ -45,14 +45,14 @@ const WEB_LINES = buildWebLines(WEB_NODES);
 // expanding outward from the button.
 const WEB_ORIGIN = [92, 92];
 const nodeDelay = ([x, y]) => Math.hypot(WEB_ORIGIN[0] - x, WEB_ORIGIN[1] - y) * 4;
-// The single node nearest the button -- this is the one that breaks
-// formation and chases the cursor while the button is hovered.
+// The single node nearest the button -- its dot is hidden (see below)
+// and its connecting lines chase the cursor while the button is hovered.
 const TRACK_NODE_INDEX = WEB_NODES.reduce(
   (best, node, i) => (nodeDelay(node) < nodeDelay(WEB_NODES[best]) ? i : best),
   0
 );
 
-function ApplyWeb({ dotPos, linePos }) {
+function ApplyWeb({ linePos }) {
   return (
     <svg
       aria-hidden="true"
@@ -74,13 +74,12 @@ function ApplyWeb({ dotPos, linePos }) {
         );
       })}
       {WEB_NODES.map(([x, y], i) => {
-        const tracked = i === TRACK_NODE_INDEX;
-        const [cx, cy] = tracked && dotPos ? dotPos : [x, y];
+        if (i === TRACK_NODE_INDEX) return null;
         return (
           <circle
             key={i}
-            className={tracked ? 'vn2-web-dot vn2-web-dot-tracked' : 'vn2-web-dot'}
-            cx={cx} cy={cy} r={1.1}
+            className="vn2-web-dot"
+            cx={x} cy={y} r={1.1}
             style={{ transitionDelay: `${nodeDelay([x, y])}ms` }}
           />
         );
@@ -138,7 +137,7 @@ function BusinessBand({ isMobile, navigate }) {
         padding: isMobile ? '72px 24px' : '120px 8%',
       }}
     >
-      <ApplyWeb dotPos={hovering ? trackPos : null} linePos={hovering ? (lagPos || trackPos) : null} />
+      <ApplyWeb linePos={hovering ? (lagPos || trackPos) : null} />
       <FadeUp style={{ position: 'relative' }}>
         <Eyebrow style={{ color: '#FFF8EA', opacity: 0.85, marginBottom: 20 }}>For Businesses</Eyebrow>
         <SectionHeading
