@@ -118,11 +118,15 @@ export default function BusinessList({ customer, onLogout, onSelectBusiness, onN
         <div style={s.orb2} />
 
         <nav style={{ ...s.nav, padding: isMobile ? '0 16px' : '0 40px' }}>
-          <button style={s.navBrand} onClick={() => onNavigate('/home')}>Veniar</button>
+          <button style={s.navBrand} onClick={() => onNavigate(customer ? '/home' : '/')}>Veniar</button>
           <div style={s.navRight}>
-            <button style={s.navLink} onClick={() => onNavigate('/home')}>Home</button>
+            <button style={s.navLink} onClick={() => onNavigate(customer ? '/home' : '/')}>Home</button>
             <button style={s.navLink} onClick={() => onNavigate('/map')}>Map</button>
-            <button style={s.navLogout} onClick={onLogout}>Sign out</button>
+            {customer ? (
+              <button style={s.navLogout} onClick={onLogout}>Sign out</button>
+            ) : (
+              <button style={s.navLogout} onClick={() => onNavigate('/signin')}>Sign in</button>
+            )}
           </div>
         </nav>
 

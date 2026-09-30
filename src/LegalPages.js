@@ -53,7 +53,7 @@ export function Terms() {
         Veniar Points have no cash value and cannot be exchanged for currency, transferred between accounts, or redeemed outside of the approved Veniar merchant network. Points are promotional rewards earned through transactions at Veniar partner businesses and may be redeemed for rewards as described in each partner's service listing. We reserve the right to modify point values, redemption rates, and available rewards at any time.
       </Section>
       <Section title="4. Account Responsibility">
-        You are responsible for all activity under your account. Keep your credentials secure. Notify us immediately at hello@veniar.com if you suspect unauthorized access.
+        You are responsible for all activity under your account. Keep your credentials secure. Notify us immediately at support@veniar.com if you suspect unauthorized access.
       </Section>
       <Section title="5. Partner Businesses">
         Veniar is not responsible for the quality, safety, or availability of products or services offered by partner businesses. Disputes with partners should be resolved directly with the partner.
@@ -65,7 +65,7 @@ export function Terms() {
         We may update these terms from time to time. Continued use of the service after changes constitutes acceptance.
       </Section>
       <Section title="8. Contact">
-        Questions? Email us at hello@veniar.com. Legal matters: legal@rewards-now.net.
+        Questions? Email us at support@veniar.com. Legal matters: legal@rewards-now.net.
       </Section>
     </PageShell>
   );
@@ -92,13 +92,13 @@ export function Privacy() {
         Passwords are stored as one-way cryptographic hashes. We use industry-standard security practices including encrypted connections for all data in transit.
       </Section>
       <Section title="5. Your Rights">
-        You may request deletion of your account and associated data by emailing hello@veniar.com. We will process requests within 30 days.
+        You may request deletion of your account and associated data by emailing support@veniar.com. We will process requests within 30 days.
       </Section>
       <Section title="6. Cookies">
         We use session tokens stored in browser memory to keep you signed in. We do not use tracking cookies or third-party advertising pixels.
       </Section>
       <Section title="7. Contact">
-        For privacy questions, contact hello@veniar.com. Veniar is a product of RewardsNow, Inc.
+        For privacy questions, contact support@veniar.com. Veniar is a product of RewardsNow, Inc.
       </Section>
     </PageShell>
   );

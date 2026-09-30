@@ -35,6 +35,21 @@ function BusinessOwnerDashboard() {
   const [showSvcForm, setShowSvcForm] = useState(false);
   const [editingSvc, setEditingSvc] = useState(null);
 
+  // Trial period + public/private visibility. Backed by endpoints that
+  // don't exist yet in the current API -- see docs/backend-onboarding-pipeline.md
+  // for the full contract these calls are written against.
+  const [trial, setTrial] = useState({
+    status: 'TRIAL', // TRIAL | PENDING_REVIEW | APPROVED
+    visibility: 'PRIVATE', // PRIVATE | PUBLIC -- only changeable once APPROVED
+    taxDocumentsSubmitted: false,
+    taxDocumentFileName: '',
+    businessBio: '',
+    pricingPercent: null, // set by admin on approval, e.g. 8 (%)
+  });
+  const [bioDraft, setBioDraft] = useState('');
+  const [trialSaving, setTrialSaving] = useState(false);
+  const [trialMsg, setTrialMsg] = useState({ text: '', type: '' });
+
   const [offers, setOffers] = useState([]);
   const [settlement, setSettlement] = useState(null);
   const [showOfferForm, setShowOfferForm] = useState(false);
@@ -122,6 +137,18 @@ function BusinessOwnerDashboard() {
     setLoading(false);
   };
 
+  const fetchTrial = async () => {
+    if (!account?.businessId) return;
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/onboarding`, { headers: auth });
+      if (res.ok) {
+        const d = await res.json();
+        setTrial(prev => ({ ...prev, ...d }));
+        setBioDraft(d.businessBio || '');
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     if (!token || !account) return;
     if (tab === 'employees') fetchEmployees();
@@ -129,6 +156,7 @@ function BusinessOwnerDashboard() {
     if (tab === 'stats') fetchStats();
     if (tab === 'offers') fetchOffers();
     if (tab === 'settlement') fetchSettlement();
+    if (tab === 'trial') { fetchEmployees(); fetchTrial(); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, account, tab]);
 
@@ -282,6 +310,89 @@ function BusinessOwnerDashboard() {
     setSettingsPwSaving(false);
   };
 
+  const employeeInfraReady = employees.length > 0;
+  const bioReady = (trial.businessBio || '').trim().length >= 40;
+  const trialRequirementsMet = trial.taxDocumentsSubmitted && employeeInfraReady && bioReady;
+
+  const handleTaxUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !account?.businessId) return;
+    setTrialSaving(true);
+    setTrialMsg({ text: '', type: '' });
+    try {
+      const formData = new FormData();
+      formData.append('taxDocument', file);
+      const res = await fetch(`${API}/businesses/${account.businessId}/tax-documents`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Endpoint doesn't exist in the backend yet -- update the UI
+      // optimistically so the flow is reviewable; see the pipeline doc.
+    }
+    setTrial(prev => ({ ...prev, taxDocumentsSubmitted: true, taxDocumentFileName: file.name }));
+    setTrialMsg({ text: 'Tax document received.', type: 'success' });
+    setTrialSaving(false);
+  };
+
+  const handleSaveBio = async () => {
+    if (!account?.businessId || trialSaving) return;
+    if (bioDraft.trim().length < 40) {
+      setTrialMsg({ text: 'Bio should be at least 40 characters so it reads well next to your listing.', type: 'error' });
+      return;
+    }
+    setTrialSaving(true);
+    setTrialMsg({ text: '', type: '' });
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/bio`, {
+        method: 'PATCH', headers: auth,
+        body: JSON.stringify({ businessBio: bioDraft }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Same as above -- optimistic until the backend endpoint exists.
+    }
+    setTrial(prev => ({ ...prev, businessBio: bioDraft }));
+    setTrialMsg({ text: 'Bio saved.', type: 'success' });
+    setTrialSaving(false);
+  };
+
+  const handleSubmitForReview = async () => {
+    if (!account?.businessId || trialSaving || !trialRequirementsMet) return;
+    setTrialSaving(true);
+    setTrialMsg({ text: '', type: '' });
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/onboarding/submit`, {
+        method: 'POST', headers: auth,
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Optimistic -- see pipeline doc for the real endpoint.
+    }
+    setTrial(prev => ({ ...prev, status: 'PENDING_REVIEW' }));
+    setTrialMsg({ text: 'Submitted for review. An admin will confirm your pricing and take you public.', type: 'success' });
+    setTrialSaving(false);
+  };
+
+  const handleSetVisibility = async (visibility) => {
+    if (!account?.businessId || trial.status !== 'APPROVED' || trial.visibility === visibility) return;
+    setTrialSaving(true);
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/visibility`, {
+        method: 'PATCH', headers: auth,
+        body: JSON.stringify({ visibility }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Optimistic -- see pipeline doc for the real endpoint.
+    }
+    setTrial(prev => ({ ...prev, visibility }));
+    setTrialMsg({ text: visibility === 'PUBLIC' ? 'You are now visible on the map and in search.' : 'Your listing is now private.', type: 'success' });
+    setTrialSaving(false);
+  };
+
   const Skeleton = ({ h = 72 }) => (
       <div style={{ height: h, borderRadius: 0, marginBottom: 12, background: 'linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
   );
@@ -323,6 +434,7 @@ function BusinessOwnerDashboard() {
   const isApproved = account?.hasBusiness && account?.businessId;
   const TABS = [
     { key: 'overview', label: 'Overview' },
+    { key: 'trial', label: 'Trial & Visibility' },
     { key: 'stats', label: 'Analytics' },
     { key: 'offers', label: 'Offers' },
     { key: 'settlement', label: 'Settlement' },
@@ -405,6 +517,7 @@ function BusinessOwnerDashboard() {
                   ) : (
                       <div style={{ ...s.quickGrid, gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(180px, 1fr))' }}>
                         {[
+                          { label: 'Trial & Visibility', sub: trial.status === 'APPROVED' ? `${trial.visibility === 'PUBLIC' ? 'Public' : 'Private'} listing` : 'Complete your trial', key: 'trial' },
                           { label: 'Analytics', sub: 'View points activity', key: 'stats' },
                           { label: 'Employees', sub: 'Manage staff', key: 'employees' },
                           { label: 'Services', sub: 'Manage menu', key: 'services' },
@@ -416,6 +529,137 @@ function BusinessOwnerDashboard() {
                         ))}
                       </div>
                   )}
+                </>
+            )}
+
+            {tab === 'trial' && isApproved && (
+                <>
+                  <h2 style={s.pageTitle}>Trial & Visibility</h2>
+
+                  <div style={{ ...s.statusCard, flexDirection: isMobile ? 'column' : 'row' }}>
+                    <div>
+                      <p style={s.statusName}>
+                        {trial.status === 'APPROVED' ? 'Trial complete' : trial.status === 'PENDING_REVIEW' ? 'Submitted for review' : 'In trial period'}
+                      </p>
+                      <p style={s.statusEmail}>
+                        {trial.status === 'APPROVED'
+                          ? `Billing is ${trial.pricingPercent != null ? `${trial.pricingPercent}% of revenue` : 'a percentage of revenue, set by the team on approval'}.`
+                          : trial.status === 'PENDING_REVIEW'
+                          ? 'Our team is confirming your documents, staff setup, and bio.'
+                          : 'Complete the three requirements below, then submit for review.'}
+                      </p>
+                    </div>
+                    <div style={{
+                      padding: '7px 14px', borderRadius: 0, fontSize: '12px', fontWeight: '700', alignSelf: isMobile ? 'flex-start' : 'center',
+                      background: trial.status === 'APPROVED' ? '#e8f4ed' : trial.status === 'PENDING_REVIEW' ? '#eff6ff' : '#fff8e1',
+                      color: trial.status === 'APPROVED' ? '#2e7d52' : trial.status === 'PENDING_REVIEW' ? ROYAL : '#e0a020',
+                    }}>
+                      {trial.status === 'APPROVED' ? 'Approved' : trial.status === 'PENDING_REVIEW' ? 'Pending Review' : 'Trial Period'}
+                    </div>
+                  </div>
+
+                  {trialMsg.text && (
+                    <p style={{ ...s.settingsFeedback, color: trialMsg.type === 'error' ? '#c0392b' : '#2e7d52', background: trialMsg.type === 'error' ? '#fdeaea' : '#e8f4ed', border: `1px solid ${trialMsg.type === 'error' ? '#fbc0c0' : '#a8d5b5'}` }}>
+                      {trialMsg.text}
+                    </p>
+                  )}
+
+                  {/* Visibility */}
+                  <div style={s.settingsCard}>
+                    <p style={s.settingsCardTitle}>Listing visibility</p>
+                    <p style={s.settingsCardSub}>
+                      {trial.status === 'APPROVED'
+                        ? 'Control whether customers can find you on the map, in search, and in the business list.'
+                        : 'Your listing stays private and is hidden from customers until your trial is approved.'}
+                    </p>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      {['PRIVATE', 'PUBLIC'].map(v => (
+                        <button
+                          key={v}
+                          disabled={trial.status !== 'APPROVED' || trialSaving}
+                          onClick={() => handleSetVisibility(v)}
+                          style={{
+                            ...s.visToggleBtn,
+                            ...(trial.visibility === v ? s.visToggleBtnActive : {}),
+                            opacity: trial.status !== 'APPROVED' ? 0.5 : 1,
+                            cursor: trial.status !== 'APPROVED' ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          {v === 'PRIVATE' ? 'Private' : 'Public'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Requirements checklist */}
+                  <div style={s.settingsCard}>
+                    <p style={s.settingsCardTitle}>Trial requirements</p>
+                    <p style={s.settingsCardSub}>All three are required before your business can go public. Pricing is a percentage of revenue, confirmed from your tax documents.</p>
+
+                    <div style={s.reqRow}>
+                      <div style={s.reqHead}>
+                        <span style={{ ...s.reqCheck, ...(trial.taxDocumentsSubmitted ? s.reqCheckDone : {}) }}>{trial.taxDocumentsSubmitted ? '✓' : '1'}</span>
+                        <div>
+                          <p style={s.reqTitle}>Tax documents</p>
+                          <p style={s.reqDesc}>
+                            {trial.taxDocumentsSubmitted
+                              ? `Received: ${trial.taxDocumentFileName || 'document on file'}`
+                              : 'Upload your business tax documents so pricing can be set as a percentage of revenue.'}
+                          </p>
+                        </div>
+                      </div>
+                      <label style={{ ...s.addBtn, display: 'inline-block', opacity: trialSaving ? 0.7 : 1, cursor: trialSaving ? 'not-allowed' : 'pointer' }}>
+                        {trial.taxDocumentsSubmitted ? 'Replace file' : 'Upload'}
+                        <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={handleTaxUpload} disabled={trialSaving} style={{ display: 'none' }} />
+                      </label>
+                    </div>
+
+                    <div style={s.reqRow}>
+                      <div style={s.reqHead}>
+                        <span style={{ ...s.reqCheck, ...(employeeInfraReady ? s.reqCheckDone : {}) }}>{employeeInfraReady ? '✓' : '2'}</span>
+                        <div>
+                          <p style={s.reqTitle}>Employee infrastructure</p>
+                          <p style={s.reqDesc}>
+                            {employeeInfraReady
+                              ? `${employees.length} employee${employees.length === 1 ? '' : 's'} added.`
+                              : 'Add at least one employee account so staff can process redemptions at checkout.'}
+                          </p>
+                        </div>
+                      </div>
+                      <button style={s.editBtn} onClick={() => setTab('employees')}>Manage employees →</button>
+                    </div>
+
+                    <div style={{ ...s.reqRow, flexDirection: 'column', alignItems: 'stretch' }}>
+                      <div style={s.reqHead}>
+                        <span style={{ ...s.reqCheck, ...(bioReady ? s.reqCheckDone : {}) }}>{bioReady ? '✓' : '3'}</span>
+                        <div>
+                          <p style={s.reqTitle}>Business bio</p>
+                          <p style={s.reqDesc}>Write a short description of who you are. It appears alongside your listing once you go public.</p>
+                        </div>
+                      </div>
+                      <textarea
+                        style={s.bioTextarea}
+                        rows={4}
+                        placeholder="We're a family-owned coffee shop serving the neighborhood since 2014…"
+                        value={bioDraft}
+                        onChange={e => setBioDraft(e.target.value)}
+                      />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={s.reqDesc}>{bioDraft.trim().length}/40 characters minimum</span>
+                        <button style={{ ...s.addBtn, opacity: trialSaving ? 0.7 : 1 }} onClick={handleSaveBio} disabled={trialSaving}>
+                          Save bio
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    style={{ ...s.btn, opacity: (!trialRequirementsMet || trial.status !== 'TRIAL' || trialSaving) ? 0.6 : 1, cursor: (!trialRequirementsMet || trial.status !== 'TRIAL') ? 'not-allowed' : 'pointer' }}
+                    onClick={handleSubmitForReview}
+                    disabled={!trialRequirementsMet || trial.status !== 'TRIAL' || trialSaving}
+                  >
+                    {trial.status === 'PENDING_REVIEW' ? 'Submitted — awaiting review' : trial.status === 'APPROVED' ? 'Trial approved' : 'Submit for review'}
+                  </button>
                 </>
             )}
 
@@ -989,6 +1233,15 @@ const s = {
   settingsInput: { width: '100%', padding: '11px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '16px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' },
   settingsFeedback: { fontSize: '13px', padding: '10px 14px', borderRadius: 0, margin: '0 0 14px' },
   settingsDangerBtn: { padding: '10px 20px', borderRadius: 0, border: '1.5px solid #ffd0d0', background: 'transparent', color: '#c0392b', fontSize: '13px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
+  visToggleBtn: { padding: '10px 20px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'transparent', color: 'var(--vn-text-sub)', fontSize: '13px', fontWeight: '700', fontFamily: 'inherit' },
+  visToggleBtnActive: { borderColor: ROYAL, background: 'rgba(14,150,205,0.08)', color: ROYAL },
+  reqRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '14px', padding: '14px 0', borderTop: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', flexWrap: 'wrap' },
+  reqHead: { display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1, minWidth: '200px' },
+  reqCheck: { width: '24px', height: '24px', borderRadius: '50%', background: 'var(--vn-card-border, rgba(16,24,32,0.10))', color: 'var(--vn-text-sub)', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  reqCheckDone: { background: '#2e7d52', color: '#fff' },
+  reqTitle: { color: 'var(--vn-text)', fontSize: '13px', fontWeight: '700', margin: '0 0 3px' },
+  reqDesc: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0, lineHeight: 1.5 },
+  bioTextarea: { width: '100%', padding: '11px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '13px', marginTop: '10px', marginBottom: '8px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' },
   sectionSubHead: { color: 'var(--vn-text)', fontSize: '11px', fontWeight: '700', margin: '20px 0 12px', letterSpacing: '1.5px', textTransform: 'uppercase' },
   offerTypePills: { display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' },
   offerTypePill: { background: 'var(--vn-surface, #F5F5F4)', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', borderRadius: 0, padding: '12px 14px', flex: 1, minWidth: '140px' },

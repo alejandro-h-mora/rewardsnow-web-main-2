@@ -53,7 +53,7 @@ const CATEGORIES = [
     id: 'technical-issues',
     title: 'Technical issues',
     answer:
-      'If you\'re experiencing login issues, try resetting your password. For other technical problems, email hello@veniar.com with a description of the issue.',
+      'If you\'re experiencing login issues, try resetting your password. For other technical problems, email support@veniar.com with a description of the issue.',
   },
   {
     id: 'privacy-data',
@@ -145,7 +145,7 @@ export default function SupportPage() {
               marginBottom: '56px',
             }}
           >
-            <a href="mailto:hello@veniar.com" style={s.btnPrimary}>
+            <a href="mailto:support@veniar.com" style={s.btnPrimary}>
               Email support
             </a>
             <button
@@ -233,7 +233,7 @@ export default function SupportPage() {
             <p style={s.cardDesc}>
               Our support team responds within 1–2 business days.
             </p>
-            <a href="mailto:hello@veniar.com" style={s.btnPrimary}>
+            <a href="mailto:support@veniar.com" style={s.btnPrimary}>
               Email us
             </a>
           </div>

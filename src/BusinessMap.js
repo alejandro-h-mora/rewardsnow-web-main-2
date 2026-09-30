@@ -87,14 +87,18 @@ function BusinessMap({ customer, onLogout, onNavigate, onSelectBusiness }) {
           <div style={s.topBarRight}>
             {!isMobile && (
                 <>
-                  <button style={s.navBtn} onClick={() => onNavigate('/home')}>Home</button>
+                  <button style={s.navBtn} onClick={() => onNavigate(customer ? '/home' : '/')}>Home</button>
                   <button style={s.navBtn} onClick={() => onNavigate('/businesses')}>List</button>
                 </>
             )}
             <button style={s.navBtn} onClick={() => setShowSidebar(v => !v)}>
               {showSidebar ? (isMobile ? '✕ Close' : 'Hide list') : '☰ Nearby'}
             </button>
-            <button style={s.logoutBtn} onClick={onLogout}>{isMobile ? '↩' : 'Log Out'}</button>
+            {customer ? (
+              <button style={s.logoutBtn} onClick={onLogout}>{isMobile ? '↩' : 'Log Out'}</button>
+            ) : (
+              <button style={s.logoutBtn} onClick={() => onNavigate('/signin')}>{isMobile ? '⇥' : 'Sign In'}</button>
+            )}
           </div>
         </div>
 
@@ -188,7 +192,7 @@ function BusinessMap({ customer, onLogout, onNavigate, onSelectBusiness }) {
 
         {isMobile && (
             <div style={s.mobileBottomNav}>
-              <button style={s.mobileNavBtn} onClick={() => onNavigate('/home')}>🏠 Home</button>
+              <button style={s.mobileNavBtn} onClick={() => onNavigate(customer ? '/home' : '/')}>🏠 Home</button>
               <button style={s.mobileNavBtn} onClick={() => onNavigate('/businesses')}>📋 List</button>
               <button style={{ ...s.mobileNavBtn, color: ROYAL, fontWeight: '700' }}>🗺️ Map</button>
             </div>

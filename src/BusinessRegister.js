@@ -4,12 +4,13 @@ import { useIsMobile } from './useIsMobile';
 
 const BLUE = 'var(--rosso)';
 
+// Pricing is a percentage of revenue, confirmed from tax documents during
+// the trial period below -- there's no flat monthly fee. These tiers only
+// set which network features the business is requesting.
 const TIERS = [
   {
     key: 'standard',
     name: 'Standard',
-    price: '$100',
-    period: '/mo',
     desc: 'Join the Veniar Network. Customers earn Veniar Points that work across every partner in the city.',
     paidPartner: false,
     uniqueRewards: false,
@@ -17,8 +18,6 @@ const TIERS = [
   {
     key: 'premium',
     name: 'Premium',
-    price: '$190',
-    period: '/mo',
     desc: 'Priority placement in search and the map, full analytics dashboard, dedicated support, and performance guarantee.',
     paidPartner: true,
     uniqueRewards: false,
@@ -26,8 +25,6 @@ const TIERS = [
   {
     key: 'custom',
     name: 'Custom Rewards',
-    price: '$250',
-    period: '/mo',
     desc: "Your own branded points currency. Customers earn your points — not Veniar Points. Fully private-label.",
     paidPartner: true,
     uniqueRewards: true,
@@ -167,7 +164,7 @@ export default function BusinessRegister({ onBack, onSuccess }) {
                   Join the Veniar Network and give your customers a reason to keep coming back.
                 </p>
                 <div style={s.steps}>
-                  {['Create account', 'Business details', 'Under review'].map((label, i) => (
+                  {['Create account', 'Business details', 'Trial period'].map((label, i) => (
                       <div key={i} style={s.stepRow}>
                         <div style={{
                           ...s.stepCircle,
@@ -291,6 +288,10 @@ export default function BusinessRegister({ onBack, onSuccess }) {
                   </div>
                   <div style={s.field}>
                     <label style={s.label}>Select Your Plan</label>
+                    <p style={s.addrHint}>
+                      No flat monthly fee — pricing is a percentage of revenue, set once your trial
+                      period is complete. These just choose which network features you're requesting.
+                    </p>
                     <div style={s.tierList}>
                       {TIERS.map(t => (
                           <div key={t.key} style={{ ...s.tierCard, ...(tier === t.key ? s.tierCardSelected : {}) }}
@@ -300,7 +301,6 @@ export default function BusinessRegister({ onBack, onSuccess }) {
                                 <p style={s.tierName}>{t.name}</p>
                                 {t.badge && <span style={s.tierBadge}>{t.badge}</span>}
                               </div>
-                              <p style={s.tierPrice}>{t.price}<span style={s.tierPeriod}>{t.period}</span></p>
                             </div>
                             <p style={s.tierDesc}>{t.desc}</p>
                             <div style={{ ...s.tierRadio, ...(tier === t.key ? s.tierRadioSelected : {}) }} />
@@ -323,7 +323,20 @@ export default function BusinessRegister({ onBack, onSuccess }) {
                   <div style={s.successIcon}>✓</div>
                   <h2 style={s.formTitle}>Application submitted</h2>
                   <p style={s.successMsg}>
-                    Our team reviews every application within 24–48 hours. You'll get an email the moment your business goes live.
+                    Our team reviews every application within 24–48 hours. Once approved, your
+                    business enters a private trial period — not yet visible to customers.
+                  </p>
+                  <div style={s.trialStepsBox}>
+                    <p style={s.trialStepsTitle}>Before you go public, you'll need to:</p>
+                    <ul style={s.trialStepsList}>
+                      <li>Submit your business tax documents, so pricing can be set as a percentage of revenue</li>
+                      <li>Add at least one employee account so staff can process redemptions</li>
+                      <li>Write a short bio describing who you are, shown alongside your listing</li>
+                    </ul>
+                  </div>
+                  <p style={s.successMsg}>
+                    You'll manage all of this — and switch your listing to public once approved — from
+                    the <strong>Trial &amp; Visibility</strong> tab in your business dashboard.
                   </p>
                   <p style={s.successTier}>Plan selected: <strong>{TIERS.find(t => t.key === tier)?.name}</strong></p>
                   <button style={s.submitBtn} onClick={onBack}>Back to sign in</button>
@@ -371,8 +384,6 @@ const s = {
   tierHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' },
   tierName: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '600', margin: 0 },
   tierBadge: { background: 'var(--rosso)', color: '#FFF8EA', fontSize: '10px', fontWeight: '700', padding: '2px 7px', borderRadius: 0, marginTop: '4px', display: 'inline-block' },
-  tierPrice: { color: 'var(--vn-text)', fontSize: '16px', fontWeight: '700', margin: 0 },
-  tierPeriod: { color: '#9ca3af', fontSize: '12px', fontWeight: '400' },
   tierDesc: { color: '#6b7280', fontSize: '12px', lineHeight: 1.5, margin: 0, paddingRight: '24px' },
   tierRadio: { position: 'absolute', top: '16px', right: '16px', width: '16px', height: '16px', borderRadius: '50%', border: '2px solid #d1d5db', background: '#fff' },
   tierRadioSelected: { borderColor: BLUE, background: BLUE },
@@ -383,4 +394,7 @@ const s = {
   successIcon: { width: '64px', height: '64px', borderRadius: '50%', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   successMsg: { color: 'var(--vn-text-sub, #5F6B73)', fontSize: '14px', lineHeight: 1.7, margin: 0 },
   successTier: { color: 'var(--vn-text-sub, #5F6B73)', fontSize: '13px', margin: 0 },
+  trialStepsBox: { width: '100%', textAlign: 'left', background: 'var(--vn-surface, #F5F5F4)', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', borderRadius: 0, padding: '18px 20px', boxSizing: 'border-box' },
+  trialStepsTitle: { color: 'var(--vn-text)', fontSize: '13px', fontWeight: '700', margin: '0 0 10px' },
+  trialStepsList: { color: 'var(--vn-text-sub, #5F6B73)', fontSize: '13px', lineHeight: 1.7, margin: 0, paddingLeft: '18px' },
 };

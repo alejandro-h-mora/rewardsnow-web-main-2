@@ -49,7 +49,7 @@ export default function MissionPage() {
               color: '#FFF8EA',
             }}
           >
-            Our mission.
+            What is RewardsNow?
           </h1>
 
           {/* Gold accent bar */}
@@ -57,14 +57,22 @@ export default function MissionPage() {
 
           {/* Body */}
           <p style={{ ...s.body, color: 'rgba(255,248,234,0.68)' }}>
-            Currently Building... Check back in! Any questions,{' '}
-            <button
-              style={s.inlineLink}
-              onClick={() => navigate('/support')}
-            >
-              contact support
-            </button>
-            .
+            RewardsNow is a company that runs a software where rewards points are
+            standardized among a large group of different companies. For example,
+            someone could use RewardsNow points to get discounts at Nordstrom or at
+            Dunkin — all from the same app.
+          </p>
+          <p style={{ ...s.body, color: 'rgba(255,248,234,0.68)', marginTop: '20px' }}>
+            RewardsNow is also willing to, for a bigger contract, become a
+            long-term partner of a company in order to set up their own rewards
+            system without needing to run their own software operations.
+          </p>
+          <p style={{ ...s.body, color: 'rgba(255,248,234,0.68)', marginTop: '20px' }}>
+            RewardsNow seeks to bring convenience to both the customer and the
+            companies they interact with. Customers are given a map of RewardsNow
+            partners near them, alongside the ability to scroll a list of
+            RewardsNow partners, where companies can pay RewardsNow a larger sum
+            of money to be recommended to users more often.
           </p>
           </div>
         </section>
@@ -79,9 +87,16 @@ export default function MissionPage() {
           <div
             style={{
               maxWidth: '720px',
-                            padding: isMobile ? '0 24px' : '0 8%',
+              padding: isMobile ? '0 24px' : '0 8%',
             }}
           >
+            <p style={{ ...s.body, marginBottom: '20px' }}>
+              Any questions,{' '}
+              <button style={s.inlineLink} onClick={() => navigate('/support')}>
+                contact support
+              </button>
+              .
+            </p>
             <button
               style={s.btnPrimary}
               onClick={() => navigate('/support')}

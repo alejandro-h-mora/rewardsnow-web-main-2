@@ -14,7 +14,7 @@ const PRICE_LABELS = { BUDGET: '$', MODERATE: '$$', PREMIUM: '$$$' };
 const scoreColor = n => n >= 80 ? '#16a34a' : n >= 60 ? '#d97706' : '#2563eb';
 const scoreBg   = n => n >= 80 ? '#f0fdf4' : n >= 60 ? '#fffbeb' : '#eff6ff';
 
-export default function BusinessDetail({ business, customer, onBack, onLogout, onRefresh }) {
+export default function BusinessDetail({ business, customer, onBack, onLogout, onSignIn, onRefresh }) {
   const isMobile = useIsMobile();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,7 @@ export default function BusinessDetail({ business, customer, onBack, onLogout, o
   };
 
   const handleRedeem = async service => {
+    if (!customer?.token) { onSignIn?.(); return; }
     if (redeeming) return;
     setRedeeming(service.id);
     try {
@@ -93,7 +94,11 @@ export default function BusinessDetail({ business, customer, onBack, onLogout, o
           <button style={s.backBtn} onClick={onBack}>← Back</button>
           {!isMobile && <span style={s.navBrand}>Veniar</span>}
         </div>
-        <button style={s.navLogout} onClick={onLogout}>Sign out</button>
+        {customer ? (
+          <button style={s.navLogout} onClick={onLogout}>Sign out</button>
+        ) : (
+          <button style={s.navLogout} onClick={onSignIn}>Sign in</button>
+        )}
       </nav>
 
       <div style={{ ...s.body, padding: isMobile ? '20px 16px' : '40px 24px' }}>
@@ -216,7 +221,7 @@ export default function BusinessDetail({ business, customer, onBack, onLogout, o
                       onClick={() => handleRedeem(svc)}
                       disabled={!!redeeming}
                     >
-                      {redeeming === svc.id ? 'Redeeming…' : 'Redeem'}
+                      {!customer ? 'Sign in to redeem' : redeeming === svc.id ? 'Redeeming…' : 'Redeem'}
                     </button>
                   </div>
                 </div>

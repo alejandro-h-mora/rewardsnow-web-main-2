@@ -69,9 +69,9 @@ export default function ContactPage() {
             }}
           >
             {[
-              { label: 'For general questions and support:', email: 'hello@veniar.com', href: 'mailto:hello@veniar.com' },
+              { label: 'For general questions and support:', email: 'support@veniar.com', href: 'mailto:support@veniar.com' },
               { label: 'For legal matters:', email: 'legal@rewards-now.net', href: 'mailto:legal@rewards-now.net' },
-              { label: 'For business partnerships:', email: 'hello@veniar.com', href: 'mailto:hello@veniar.com' },
+              { label: 'For business partnerships:', email: 'support@veniar.com', href: 'mailto:support@veniar.com' },
             ].map((row, i) => (
               <div
                 key={row.label}

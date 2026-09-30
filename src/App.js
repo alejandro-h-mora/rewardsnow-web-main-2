@@ -148,6 +148,7 @@ function App() {
         customer={customer}
         onBack={() => navigate('/businesses')}
         onLogout={handleLogout}
+        onSignIn={() => navigate('/signin')}
         onRefresh={() => setRefreshKey(k => k + 1)}
       />
     );
@@ -189,9 +190,13 @@ function App() {
       {/* Authenticated customer routes */}
       <Route path="/home" element={<Protected><Home customer={customer} onLogout={handleLogout} onNavigate={navigate} refreshKey={refreshKey} /></Protected>} />
       <Route path="/settings" element={<Protected><CustomerSettings customer={customer} onCustomerUpdate={handleCustomerUpdate} onLogout={handleLogout} /></Protected>} />
-      <Route path="/businesses" element={<Protected><BusinessList key={refreshKey} customer={customer} onLogout={handleLogout} onSelectBusiness={handleSelectBusiness} onNavigate={navigate} /></Protected>} />
-      <Route path="/business" element={<Protected><BusinessDetailWrapper /></Protected>} />
-      <Route path="/map" element={<Protected><BusinessMap key={refreshKey} customer={customer} onLogout={handleLogout} onNavigate={navigate} onSelectBusiness={handleSelectBusiness} /></Protected>} />
+
+      {/* Public browsing -- viewing the map and partner businesses never
+          requires an account; redeeming rewards still does (gated inside
+          BusinessDetail itself via the customer prop being null). */}
+      <Route path="/businesses" element={<BusinessList key={refreshKey} customer={customer} onLogout={handleLogout} onSelectBusiness={handleSelectBusiness} onNavigate={navigate} />} />
+      <Route path="/business" element={<BusinessDetailWrapper />} />
+      <Route path="/map" element={<BusinessMap key={refreshKey} customer={customer} onLogout={handleLogout} onNavigate={navigate} onSelectBusiness={handleSelectBusiness} />} />
 
       {/* Staff / admin portals */}
       <Route path="/admin" element={<StaffRoute><AdminDashboard /></StaffRoute>} />
