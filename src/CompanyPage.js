@@ -1,18 +1,15 @@
 import { useEffect } from 'react';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
 
-const LAGOON = '#0E96CD';
-const PALM   = '#648D62';
-const YELLOW = '#F8C922';
+const LAGOON = 'var(--rosso)';
+const PALM = 'var(--rosso)';
 const MUTED  = '#5F6B73';
 
 export default function CompanyPage() {
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
 
   useEffect(() => {
     document.title = 'RewardsNow — Parent Company';
@@ -39,7 +36,7 @@ export default function CompanyPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>COMPANY</p>
 
@@ -79,8 +76,7 @@ export default function CompanyPage() {
           <div
             style={{
               maxWidth: '720px',
-              margin: '0 auto',
-              padding: isMobile ? '0 24px' : '0 8%',
+                            padding: isMobile ? '0 24px' : '0 8%',
             }}
           >
             {/* External link card */}
@@ -121,10 +117,10 @@ export default function CompanyPage() {
 
 const s = {
   eyebrow: {
-    color: YELLOW,
+    color: 'var(--vn-text)',
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '4px',
+    letterSpacing: '0.24em',
     textTransform: 'uppercase',
     margin: '0 0 20px',
   },
@@ -132,14 +128,16 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '900',
     lineHeight: 1.06,
-    letterSpacing: '-0.03em',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontFamily: "'Archivo','Inter',sans-serif",
     margin: '0 0 24px',
   },
   goldBar: {
     width: '48px',
-    height: '3px',
-    background: YELLOW,
-    borderRadius: '2px',
+    height: '1px',
+    background: 'var(--vn-line, var(--vn-card-border))',
+    borderRadius: 0,
     marginBottom: '32px',
   },
   body: {
@@ -150,7 +148,7 @@ const s = {
   },
   linkCard: {
     background: 'var(--vn-card, #FFFFFF)',
-    borderRadius: '16px',
+    borderRadius: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
@@ -160,7 +158,7 @@ const s = {
     fontSize: '17px',
     fontWeight: '800',
     margin: 0,
-    letterSpacing: '-0.02em',
+    letterSpacing: '0.02em',
   },
   cardDesc: {
     color: MUTED,
@@ -173,7 +171,7 @@ const s = {
     padding: '13px 28px',
     background: LAGOON,
     color: '#FFFFFF',
-    borderRadius: '10px',
+    borderRadius: 0,
     fontSize: '15px',
     fontWeight: '700',
     textDecoration: 'none',

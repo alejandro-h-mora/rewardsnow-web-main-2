@@ -1,19 +1,16 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
 
-const LAGOON = '#0E96CD';
-const ORANGE = '#D66024';
-const YELLOW = '#F8C922';
+const LAGOON = 'var(--rosso)';
+const ORANGE = 'var(--rosso)';
 
 export default function MissionPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
 
   useEffect(() => {
     document.title = 'Mission — RewardsNow';
@@ -40,7 +37,7 @@ export default function MissionPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>COMPANY</p>
 
@@ -52,7 +49,7 @@ export default function MissionPage() {
               color: '#FFF8EA',
             }}
           >
-            Our mission.
+            What is RewardsNow?
           </h1>
 
           {/* Gold accent bar */}
@@ -60,14 +57,22 @@ export default function MissionPage() {
 
           {/* Body */}
           <p style={{ ...s.body, color: 'rgba(255,248,234,0.68)' }}>
-            Currently Building... Check back in! Any questions,{' '}
-            <button
-              style={s.inlineLink}
-              onClick={() => navigate('/support')}
-            >
-              contact support
-            </button>
-            .
+            RewardsNow is a company that runs a software where rewards points are
+            standardized among a large group of different companies. For example,
+            someone could use RewardsNow points to get discounts at Nordstrom or at
+            Dunkin — all from the same app.
+          </p>
+          <p style={{ ...s.body, color: 'rgba(255,248,234,0.68)', marginTop: '20px' }}>
+            RewardsNow is also willing to, for a bigger contract, become a
+            long-term partner of a company in order to set up their own rewards
+            system without needing to run their own software operations.
+          </p>
+          <p style={{ ...s.body, color: 'rgba(255,248,234,0.68)', marginTop: '20px' }}>
+            RewardsNow seeks to bring convenience to both the customer and the
+            companies they interact with. Customers are given a map of RewardsNow
+            partners near them, alongside the ability to scroll a list of
+            RewardsNow partners, where companies can pay RewardsNow a larger sum
+            of money to be recommended to users more often.
           </p>
           </div>
         </section>
@@ -82,10 +87,16 @@ export default function MissionPage() {
           <div
             style={{
               maxWidth: '720px',
-              margin: '0 auto',
               padding: isMobile ? '0 24px' : '0 8%',
             }}
           >
+            <p style={{ ...s.body, marginBottom: '20px' }}>
+              Any questions,{' '}
+              <button style={s.inlineLink} onClick={() => navigate('/support')}>
+                contact support
+              </button>
+              .
+            </p>
             <button
               style={s.btnPrimary}
               onClick={() => navigate('/support')}
@@ -103,10 +114,10 @@ export default function MissionPage() {
 
 const s = {
   eyebrow: {
-    color: YELLOW,
+    color: 'var(--vn-text)',
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '4px',
+    letterSpacing: '0.24em',
     textTransform: 'uppercase',
     margin: '0 0 20px',
   },
@@ -114,14 +125,16 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '900',
     lineHeight: 1.06,
-    letterSpacing: '-0.03em',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontFamily: "'Archivo','Inter',sans-serif",
     margin: '0 0 24px',
   },
   goldBar: {
     width: '48px',
-    height: '3px',
-    background: YELLOW,
-    borderRadius: '2px',
+    height: '1px',
+    background: 'var(--vn-line, var(--vn-card-border))',
+    borderRadius: 0,
     marginBottom: '28px',
   },
   body: {
@@ -135,7 +148,7 @@ const s = {
     background: ORANGE,
     border: 'none',
     color: '#FFFFFF',
-    borderRadius: '10px',
+    borderRadius: 0,
     fontSize: '15px',
     fontWeight: '700',
     cursor: 'pointer',

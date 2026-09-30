@@ -1,19 +1,17 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
 
-const CYAN   = '#1692A2';
-const LAGOON = '#0E96CD';
-const ORANGE = '#D66024';
-const YELLOW = '#F8C922';
+const CYAN = 'var(--rosso)';
+const LAGOON = 'var(--rosso)';
+const ORANGE = 'var(--rosso)';
 
 const NUM_COLORS = [
-  { bg: 'rgba(22,146,162,0.12)',  color: CYAN },
-  { bg: 'rgba(14,150,205,0.10)',  color: LAGOON },
-  { bg: 'rgba(214,96,36,0.10)',   color: ORANGE },
+  { bg: 'var(--vn-surface)',  color: CYAN },
+  { bg: 'var(--vn-surface)',  color: LAGOON },
+  { bg: 'var(--vn-surface)',   color: ORANGE },
 ];
 
 const FEATURES = [
@@ -53,8 +51,7 @@ const FEATURES = [
 export default function VeniarProductPage() {
   const navigate  = useNavigate();
   const isMobile  = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
 
   useEffect(() => {
     document.title = 'Veniar — About Us';
@@ -81,7 +78,7 @@ export default function VeniarProductPage() {
             paddingBottom: isMobile ? 72 : 100,
           }}
         >
-          <div style={{ maxWidth: '720px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 8%' }}>
+          <div style={{ maxWidth: '720px', padding: isMobile ? '0 24px' : '0 8%' }}>
           {/* Gold eyebrow */}
           <p style={s.eyebrow}>ABOUT US</p>
 
@@ -117,8 +114,7 @@ export default function VeniarProductPage() {
         >
         <div style={{
             maxWidth: '720px',
-            margin: '0 auto',
-            padding: isMobile ? '0 24px' : '0 8%',
+                        padding: isMobile ? '0 24px' : '0 8%',
             display: 'flex',
             flexDirection: 'column',
             gap: '48px',
@@ -159,15 +155,14 @@ export default function VeniarProductPage() {
         <div
           style={{
             maxWidth: '720px',
-            margin: '0 auto',
-            padding: isMobile ? '0 24px' : '0 8%',
+                        padding: isMobile ? '0 24px' : '0 8%',
           }}
         >
           <div
             className="vn-card"
             style={{
               background: 'var(--vn-card, #FFFFFF)',
-              borderRadius: '16px',
+              borderRadius: 0,
               padding: isMobile ? '32px 24px' : '44px 40px',
             }}
           >
@@ -176,7 +171,7 @@ export default function VeniarProductPage() {
                 color: 'var(--vn-text, var(--rn-text))',
                 fontSize: isMobile ? '1.4rem' : '1.75rem',
                 fontWeight: '800',
-                letterSpacing: '-0.02em',
+                letterSpacing: '0.02em',
                 lineHeight: 1.2,
                 margin: '0 0 28px',
               }}
@@ -219,10 +214,10 @@ export default function VeniarProductPage() {
 
 const s = {
   eyebrow: {
-    color: YELLOW,
+    color: 'var(--vn-text)',
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '4px',
+    letterSpacing: '0.24em',
     textTransform: 'uppercase',
     margin: '0 0 20px',
   },
@@ -230,14 +225,14 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '900',
     lineHeight: 1.06,
-    letterSpacing: '-0.04em',
+    letterSpacing: '0.04em',
     margin: '0 0 24px',
   },
   goldBar: {
     width: '48px',
-    height: '3px',
-    background: YELLOW,
-    borderRadius: '2px',
+    height: '1px',
+    background: 'var(--vn-line, var(--vn-card-border))',
+    borderRadius: 0,
     marginBottom: '28px',
   },
   featureBlock: {
@@ -248,19 +243,19 @@ const s = {
   numBadge: {
     display: 'inline-block',
     alignSelf: 'flex-start',
-    background: 'rgba(22,146,162,0.12)',
+    background: 'var(--vn-surface)',
     color: CYAN,
     fontSize: '11px',
     fontWeight: '800',
     letterSpacing: '2px',
     padding: '4px 10px',
-    borderRadius: '20px',
+    borderRadius: 0,
     marginBottom: '4px',
   },
   featureHeading: {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '800',
-    letterSpacing: '-0.02em',
+    letterSpacing: '0.02em',
     lineHeight: 1.2,
     margin: 0,
   },
@@ -275,7 +270,7 @@ const s = {
     background: LAGOON,
     border: 'none',
     color: '#FFFFFF',
-    borderRadius: '9px',
+    borderRadius: 0,
     fontSize: '15px',
     fontWeight: '700',
     fontFamily: 'inherit',
@@ -285,7 +280,7 @@ const s = {
     background: 'transparent',
     border: '1.5px solid var(--rn-ghost-border, rgba(16,24,32,0.20))',
     color: 'var(--vn-text, var(--rn-text))',
-    borderRadius: '9px',
+    borderRadius: 0,
     fontSize: '15px',
     fontWeight: '600',
     fontFamily: 'inherit',

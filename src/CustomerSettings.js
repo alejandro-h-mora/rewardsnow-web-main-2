@@ -178,7 +178,7 @@ function Feedback({ msg }) {
   const err = msg.type === 'error';
   return (
     <p style={{
-      fontSize: '13px', padding: '10px 14px', borderRadius: '8px', margin: '0 0 16px',
+      fontSize: '13px', padding: '10px 14px', borderRadius: 0, margin: '0 0 16px',
       color: err ? '#dc2626' : '#16a34a',
       background: err ? 'rgba(220,38,38,0.1)' : 'rgba(22,163,74,0.1)',
       border: `1px solid ${err ? 'rgba(220,38,38,0.3)' : 'rgba(22,163,74,0.3)'}`,
@@ -193,18 +193,18 @@ const s = {
   nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '60px', background: 'var(--rn-nav-bg)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: '1px solid var(--rn-nav-border)', position: 'sticky', top: 0, zIndex: 100 },
   navBrand: { color: '#f59e0b', fontSize: '15px', fontWeight: '800', letterSpacing: '-0.01em', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' },
   navRight: { display: 'flex', alignItems: 'center', gap: '4px' },
-  navLink: { background: 'none', border: 'none', color: 'var(--rn-text-sub)', fontSize: '14px', fontWeight: '500', cursor: 'pointer', padding: '6px 8px', borderRadius: '6px', fontFamily: 'inherit' },
-  navLogout: { background: 'none', border: '1px solid var(--rn-ghost-border)', color: 'var(--rn-ghost-color)', fontSize: '13px', fontWeight: '500', cursor: 'pointer', padding: '6px 12px', borderRadius: '6px', fontFamily: 'inherit' },
+  navLink: { background: 'none', border: 'none', color: 'var(--rn-text-sub)', fontSize: '14px', fontWeight: '500', cursor: 'pointer', padding: '6px 8px', borderRadius: 0, fontFamily: 'inherit' },
+  navLogout: { background: 'none', border: '1px solid var(--rn-ghost-border)', color: 'var(--rn-ghost-color)', fontSize: '13px', fontWeight: '500', cursor: 'pointer', padding: '6px 12px', borderRadius: 0, fontFamily: 'inherit' },
   body: { maxWidth: '680px', margin: '0 auto', boxSizing: 'border-box', position: 'relative', zIndex: 1 },
   pageTitle: { color: 'var(--rn-text)', fontWeight: '900', margin: '0 0 6px', letterSpacing: '-0.03em' },
   pageSub: { color: 'var(--rn-text-muted)', fontSize: '14px', margin: '0 0 32px' },
-  card: { background: 'var(--rn-card-bg)', border: '1px solid var(--rn-card-border)', borderRadius: '16px', padding: '28px', marginBottom: '20px' },
+  card: { background: 'var(--rn-card-bg)', border: '1px solid var(--rn-card-border)', borderRadius: 0, padding: '28px', marginBottom: '20px' },
   cardTitle: { color: 'var(--rn-text)', fontSize: '1rem', fontWeight: '700', margin: '0 0 4px', letterSpacing: '-0.01em' },
   cardSub: { color: 'var(--rn-text-muted)', fontSize: '13px', margin: '0 0 24px' },
   row: { display: 'flex', gap: '12px' },
   half: { flex: 1, display: 'flex', flexDirection: 'column' },
   label: { color: '#f59e0b', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '7px' },
-  input: { width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1.5px solid var(--rn-input-border)', background: 'var(--rn-input-bg)', color: 'var(--rn-input-color)', fontSize: '14px', marginBottom: '18px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' },
-  saveBtn: { padding: '13px 24px', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)', color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 16px rgba(37,99,235,0.4)', fontFamily: 'inherit' },
-  dangerBtn: { padding: '11px 22px', borderRadius: '10px', border: '1.5px solid rgba(220,38,38,0.5)', background: 'rgba(220,38,38,0.1)', color: '#f87171', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
+  input: { width: '100%', padding: '12px 14px', borderRadius: 0, border: '1.5px solid var(--rn-input-border)', background: 'var(--rn-input-bg)', color: 'var(--rn-input-color)', fontSize: '14px', marginBottom: '18px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' },
+  saveBtn: { padding: '13px 24px', borderRadius: 0, border: 'none', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxShadow: 'none', fontFamily: 'inherit' },
+  dangerBtn: { padding: '11px 22px', borderRadius: 0, border: '1.5px solid rgba(220,38,38,0.5)', background: 'rgba(220,38,38,0.1)', color: '#f87171', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
 };

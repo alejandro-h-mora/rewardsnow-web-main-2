@@ -1,83 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* ── Veniar Ocean Breeze — static brand tokens (never change with theme) ── */
+/* ── Veniar 2.0 — "cinematic luxury, neighborhood soul" static tokens ───── */
 :root {
-  /* Core Ocean Breeze product identity */
-  --vn-ocean-cyan:         #1692A2;
-  --vn-ocean-cyan-hover:   #0F7F8F;
-  --vn-ocean-cyan-active:  #0A6C78;
+  /* Primary accent -- kept the historical "rosso" name since it's used
+     everywhere (buttons, active states, focus rings, the business band),
+     but repointed to blue per request. */
+  --blue:         #5AA9E6;
+  --blue-hover:   #3D8FCC;
+  --blue-soft:    #9FCBEF;
+  --rosso:        var(--blue);
+  --rosso-hover:  var(--blue-hover);
+  --rosso-soft:   var(--blue-soft);
+  --amber:        #E8B04A;
 
-  --vn-lagoon-blue:        #0E96CD;
-  --vn-lagoon-blue-hover:  #077FAF;
-  --vn-lagoon-blue-active: #06698F;
+  /* Legacy names kept as aliases so every existing var(--vn-*) reference
+     picks up the new palette without touching each call site. */
+  --vn-rosso:        var(--rosso);
+  --vn-rosso-hover:  var(--rosso-hover);
+  --vn-amber:        var(--amber);
 
-  --vn-deep-teal:          #0F6356;
-  --vn-tropical-teal:      #0F8966;
-  --vn-sea-glass:          #5CB2C9;
+  --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
-  /* Deep frame / serious product contrast */
-  --vn-night-frame:        #0A1211;
-  --vn-deep-water:         #07131A;
-  --vn-ink:                #101820;
-
-  /* Sunset and reward colors */
-  --vn-sunset-yellow:      #F8C922;
-  --vn-sunset-gold:        #EDA81B;
-  --vn-sunset-orange:      #D66024;
-  --vn-coral-red:          #AA382F;
-
-  /* Tropical greens */
-  --vn-palm-green:         #185035;
-  --vn-palm-bright:        #648D62;
-  --vn-reef-green:         #0A6C58;
-
-  /* Warm natural supports */
-  --vn-sand:               #D99B67;
-  --vn-earth-brown:        #573128;
-  --vn-olive-shadow:       #586755;
-
-  /* Light mode surfaces */
-  --vn-cream:              #FFF8EA;
-  --vn-shell:              #F5F5F4;
-  --vn-soft-sand:          #F7E8CF;
-  --vn-white:              #FFFFFF;
-
-  /* Text */
-  --vn-text-static:        #101820;
-  --vn-muted-static:       #5F6B73;
-  --vn-muted-teal:         #627887;
-
-  /* Borders and focus */
-  --vn-border:             rgba(16,24,32,0.14);
-  --vn-border-strong:      rgba(16,24,32,0.24);
-  --vn-focus:              #1692A2;
-
-  /* Dark mode surfaces */
-  --vn-dark-bg:            #0A1211;
-  --vn-dark-surface:       #07131A;
-  --vn-dark-panel:         #0B2B30;
-  --vn-dark-panel-strong:  #0F3F45;
-
-  /* Dark mode text */
-  --vn-dark-text:          #FFF8EA;
-  --vn-dark-muted:         #B8C7CC;
-
-  /* Dark mode accents */
-  --vn-dark-cyan:          #5CB2C9;
-  --vn-dark-lagoon:        #0E96CD;
-  --vn-dark-yellow:        #F8C922;
-  --vn-dark-orange:        #D66024;
-  --vn-dark-green:         #648D62;
-
-  /* Dark mode borders */
-  --vn-border-dark:        rgba(255,248,234,0.16);
-  --vn-border-dark-strong: rgba(255,248,234,0.28);
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--vn-bg, #0E0D0C);
+  color: var(--vn-text, #FFF8EA);
 }
 * {
   margin: 0;
@@ -88,43 +44,235 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* ── Ocean Breeze component classes ─────────────────────────────────────── */
+/* ── Skip link ────────────────────────────────────────────────────────── */
+.vn-skip-link {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 10000;
+  background: var(--vn-text);
+  color: var(--vn-bg);
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: top 200ms var(--ease-cinematic);
+}
+.vn-skip-link:focus {
+  top: 12px;
+}
 
+/* ── Focus rings ──────────────────────────────────────────────────────── */
+a, button, input, textarea, select, [tabindex] {
+  outline: none;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--rosso);
+  outline-offset: 2px;
+}
+
+/* ── Display / eyebrow type utilities ────────────────────────────────── */
+.vn-display {
+  font-family: 'Archivo', 'Inter', sans-serif;
+  font-stretch: expanded;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 0.95;
+  color: var(--vn-text);
+  margin: 0;
+}
+.vn-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--vn-text);
+  opacity: 0.72;
+}
+
+/* ── Buttons — sharp corners, hairlines, no shadow ───────────────────── */
+.vn2-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 16px 32px;
+  border-radius: 0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: background-color 300ms var(--ease-cinematic),
+              color 300ms var(--ease-cinematic),
+              border-color 300ms var(--ease-cinematic);
+}
+.vn2-btn-primary {
+  background: var(--rosso);
+  color: #FFF8EA;
+  border-color: var(--rosso);
+}
+.vn2-btn-primary:hover {
+  background: var(--rosso-hover);
+  border-color: var(--rosso-hover);
+}
+.vn2-btn-outline {
+  background: transparent;
+  color: var(--vn-text);
+  border-color: var(--vn-line, var(--vn-card-border));
+}
+.vn2-btn-outline:hover {
+  border-color: var(--vn-text);
+}
+.vn2-btn-inverse {
+  background: var(--vn-text);
+  color: var(--vn-bg);
+  border-color: var(--vn-text);
+}
+.vn2-btn-inverse:hover {
+  background: transparent;
+  color: var(--vn-text);
+}
+.vn2-btn-ghost {
+  background: transparent;
+  color: var(--vn-text);
+  border: none;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ── Drawn-underline link ─────────────────────────────────────────────── */
+.vn2-underline {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+}
+.vn2-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 400ms var(--ease-cinematic);
+}
+.vn2-underline:hover::after,
+.vn2-underline:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* ── Nav link hover (no rounded pill background) ─────────────────────── */
+.vn-nav-btn {
+  transition: color 0.2s var(--ease-cinematic), opacity 0.2s var(--ease-cinematic);
+  cursor: pointer;
+}
+.vn-nav-btn:hover {
+  opacity: 0.65;
+}
+
+.vn-footer-link {
+  transition: color 0.14s ease, opacity 0.14s ease;
+  cursor: pointer;
+}
+.vn-footer-link:hover {
+  opacity: 0.6;
+}
+
+/* ── Numeral fill-on-hover ────────────────────────────────────────────── */
+.vn2-numeral {
+  color: var(--vn-text);
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.5px var(--vn-text);
+  transition: color 300ms var(--ease-cinematic), -webkit-text-fill-color 300ms var(--ease-cinematic), -webkit-text-stroke-color 300ms var(--ease-cinematic);
+}
+.vn2-numeral-hover:hover .vn2-numeral,
+.vn2-numeral-filled {
+  -webkit-text-fill-color: var(--rosso-soft);
+  -webkit-text-stroke-color: var(--rosso-soft);
+}
+.vn2-numeral-hover-blue:hover .vn2-numeral,
+.vn2-numeral-filled-blue {
+  -webkit-text-fill-color: var(--blue-soft);
+  -webkit-text-stroke-color: var(--blue-soft);
+}
+
+/* ── Fade-up on entry ─────────────────────────────────────────────────── */
+.vn2-fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 600ms var(--ease-cinematic), transform 600ms var(--ease-cinematic);
+}
+.vn2-fade-up.vn2-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Hero slow zoom ───────────────────────────────────────────────────── */
+.vn2-hero-media {
+  animation: vn2HeroZoom 20s var(--ease-cinematic) forwards;
+}
+@keyframes vn2HeroZoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+
+/* ── Scroll indicator ─────────────────────────────────────────────────── */
+.vn2-scroll-indicator {
+  animation: vn2ScrollBob 1.8s ease-in-out infinite;
+}
+@keyframes vn2ScrollBob {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(8px); opacity: 1; }
+}
+
+/* ── Carousel ─────────────────────────────────────────────────────────── */
+.vn2-carousel-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.vn2-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Card / cta legacy classes kept, restyled to no-shadow sharp look ──── */
 .vn-card {
-  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1),
-              box-shadow 0.22s cubic-bezier(0.16,1,0.3,1),
-              border-color 0.22s ease;
+  transition: border-color 0.22s ease;
 }
 .vn-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 40px rgba(22,146,162,0.12) !important;
-  border-color: var(--vn-ocean-cyan-hover) !important;
+  border-color: var(--vn-text) !important;
 }
 
 .vn-cta-primary {
-  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   cursor: pointer;
 }
 .vn-cta-primary:hover {
-  background-color: var(--vn-lagoon-blue-hover) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(14,150,205,0.30) !important;
-}
-.vn-cta-primary:active {
-  transform: translateY(0);
+  background-color: var(--rosso-hover) !important;
 }
 
 .vn-cta-cyan {
-  transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   cursor: pointer;
 }
 .vn-cta-cyan:hover {
-  background-color: var(--vn-ocean-cyan-hover) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(22,146,162,0.28) !important;
-}
-.vn-cta-cyan:active {
-  transform: translateY(0);
+  background-color: var(--rosso-hover) !important;
 }
 
 .vn-cta-ghost {
@@ -132,29 +280,12 @@ code {
   cursor: pointer;
 }
 .vn-cta-ghost:hover {
-  background-color: var(--vn-shell) !important;
-  border-color: var(--vn-ocean-cyan) !important;
-}
-
-.vn-nav-btn {
-  transition: background-color 0.12s ease, color 0.12s ease;
-  cursor: pointer;
-}
-.vn-nav-btn:hover {
-  background-color: var(--vn-shell, rgba(245,245,244,0.7)) !important;
-}
-
-.vn-footer-link {
-  transition: color 0.14s ease;
-  cursor: pointer;
-}
-.vn-footer-link:hover {
-  color: var(--vn-dark-cyan, #5CB2C9) !important;
+  border-color: var(--vn-text) !important;
 }
 
 /* Dashboard mock card — slide in from right on mount */
 .vn-dash-card {
-  animation: vnSlideRight 0.75s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+  animation: vnSlideRight 0.75s var(--ease-cinematic) 0.2s both;
 }
 @keyframes vnSlideRight {
   from { opacity: 0; transform: translateX(28px); }
@@ -163,7 +294,7 @@ code {
 
 /* Route accent line draw */
 .vn-route-line {
-  animation: vnLineDraw 1.4s cubic-bezier(0.16,1,0.3,1) 0.6s both;
+  animation: vnLineDraw 1.4s var(--ease-cinematic) 0.6s both;
   transform-origin: left;
 }
 @keyframes vnLineDraw {
@@ -184,4 +315,57 @@ code {
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+/* ── Points balance — rolling-wave digit animation ────────────────────── */
+.vn2-digit-roll {
+  animation: vn2DigitRoll 900ms var(--ease-cinematic) both;
+}
+@keyframes vn2DigitRoll {
+  0%   { transform: translateY(0) rotateX(0deg);      color: inherit; }
+  25%  { transform: translateY(-10px) rotateX(-25deg); color: var(--amber); }
+  50%  { transform: translateY(2px) rotateX(15deg);    color: var(--amber); }
+  75%  { transform: translateY(-4px) rotateX(-8deg);   color: inherit; }
+  100% { transform: translateY(0) rotateX(0deg);       color: inherit; }
+}
+
+/* ── "Apply to join" web/constellation hover effect ──────────────────── */
+.vn2-web-section {
+  position: relative;
+  overflow: hidden;
+}
+.vn2-web-dot {
+  fill: #FFF8EA;
+  opacity: 0;
+  transform: scale(0);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 500ms var(--ease-cinematic), transform 500ms var(--ease-cinematic);
+}
+.vn2-web-line {
+  stroke: rgba(255,248,234,0.4);
+  stroke-width: 0.15;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-cinematic);
+}
+.vn2-web-section:has(.vn2-apply-btn:hover) .vn2-web-dot {
+  opacity: 1;
+  transform: scale(1);
+}
+.vn2-web-section:has(.vn2-apply-btn:hover) .vn2-web-line {
+  opacity: 1;
+  animation: vn2WebPulse 2.2s linear infinite;
+}
+@keyframes vn2WebPulse {
+  0%, 100% { stroke: rgba(255,248,234,0.4); }
+  50%      { stroke: var(--amber); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vn2-hero-media { animation: none !important; }
+  .vn2-scroll-indicator { animation: none !important; }
+  .vn2-fade-up { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .vn-dash-card, .vn-route-line, .vn-dot-pulse { animation: none !important; }
+  .vn2-digit-roll { animation: none !important; }
+  .vn2-web-dot, .vn2-web-line { transition: none !important; animation: none !important; }
 }

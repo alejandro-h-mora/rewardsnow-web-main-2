@@ -2,6 +2,24 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Placeholder imagery
+
+The marketing site's "cinematic luxury" redesign expects real photography under
+`public/images/`. Until those files are added, every `<img>` referencing them
+falls back to a warm gradient placeholder (see `src/ui/Media.js`) so the layout
+never shows a broken-image icon.
+
+Files the site currently references, all still missing and needed before launch:
+
+- `public/images/hero.jpg` — the landing page hero: a real local venue (café,
+  restaurant, shop) at golden hour, full-bleed, with people in it.
+- `public/images/venue-01.jpg` through `venue-08.jpg` — one photo per business
+  in `src/data/venues.js`'s "The Network" carousel; storefronts, hands, plates,
+  not stock-office imagery.
+
+Swap the mock data in `src/data/venues.js` for real participating businesses at
+the same time.
+
 ## Available Scripts
 
 In the project directory, you can run:

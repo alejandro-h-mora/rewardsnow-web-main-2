@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import { API } from './config';
 
-const ROYAL = '#0E96CD';
+const ROYAL = 'var(--rosso)';
 
 function EmployeeDashboard() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { isDark } = useTheme();
   const [token, setToken] = useState(null);
   const [employee, setEmployee] = useState(null);
   const [email, setEmail] = useState('');
@@ -162,20 +160,17 @@ function EmployeeDashboard() {
     return (
         <div style={{ display: 'flex', minHeight: '100vh', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}>
           {!isMobile && (
-              <div style={{
-                ...st.loginLeft,
-                background: isDark ? '#0A1211' : 'var(--vn-section-alt, #F5F5F4)',
-              }}>
+              <div style={st.loginLeft}>
                 <div style={st.loginLeftContent}>
-                  <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.5rem', color: isDark ? '#FFF8EA' : '#1692A2', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'20px'}} onClick={() => navigate('/business-overview')}>Veniar</span>
+                  <span style={{ ...st.loginWordmark, color: '#FFF8EA', display: 'block', marginBottom: '24px' }} onClick={() => navigate('/business-overview')}>VENIAR</span>
                   <div style={st.loginGoldLine} />
-                  <h1 style={{ ...st.loginHeadline, color: isDark ? '#FFF8EA' : 'var(--vn-text)' }}>Built for<br />your team.</h1>
-                  <p style={{ ...st.loginDesc, color: isDark ? 'rgba(255,248,234,0.65)' : 'var(--vn-text-sub)' }}>Look up customers and manage reward transactions in seconds.</p>
+                  <h1 style={st.loginHeadline}>Built for<br />your team.</h1>
+                  <p style={st.loginDesc}>Look up customers and manage reward transactions in seconds.</p>
                 </div>
               </div>
           )}
           <div style={{ ...st.loginRight, width: isMobile ? '100%' : '480px', flex: isMobile ? 1 : 'none', padding: isMobile ? '48px 24px' : '80px 64px', boxSizing: 'border-box' }}>
-            {isMobile && <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.4rem', color:'#0E96CD', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'28px'}} onClick={() => navigate('/business-overview')}>Veniar</span>}
+            {isMobile && <span style={{ ...st.loginWordmark, display: 'block', marginBottom: '28px' }} onClick={() => navigate('/business-overview')}>VENIAR</span>}
             <span style={st.loginPortalTag}>EMPLOYEE PORTAL</span>
             <h2 style={st.loginTitle}>Staff Login</h2>
             <p style={st.loginSub}>Sign in to issue customer points</p>
@@ -397,68 +392,69 @@ function EmployeeDashboard() {
 }
 
 const st = {
-  loginLeft: { flex: 1, background: '#0A1211', display: 'flex', alignItems: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
+  loginLeft: { flex: 1, background: '#0E0D0C', display: 'flex', alignItems: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
   loginLeftContent: { position: 'relative', zIndex: 2 },
-  loginGoldLine: { width: '56px', height: '3px', background: '#F8C922', marginBottom: '32px', borderRadius: '2px' },
-  loginHeadline: { color: '#FFF8EA', fontSize: '3.2rem', fontWeight: '900', lineHeight: 1.08, letterSpacing: '-0.03em', margin: '0 0 20px 0', maxWidth: '440px' },
+  loginWordmark: { fontFamily: "'Archivo', 'Inter', sans-serif", fontStretch: 'expanded', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.08em', color: 'var(--vn-text)', cursor: 'pointer' },
+  loginGoldLine: { width: '56px', height: '1px', background: 'var(--vn-line, rgba(255,248,234,0.16))', marginBottom: '32px' },
+  loginHeadline: { color: '#FFF8EA', fontSize: '2.8rem', fontWeight: 800, lineHeight: 1.08, letterSpacing: '0.02em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif", margin: '0 0 20px 0', maxWidth: '460px' },
   loginDesc: { color: 'rgba(255,248,234,0.65)', fontSize: '15px', lineHeight: 1.7, margin: 0, maxWidth: '360px' },
-  loginRight: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-card, #FFFFFF)' },
-  loginPortalTag: { display: 'inline-block', background: 'rgba(14,150,205,0.10)', color: '#0E96CD', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '5px 12px', borderRadius: '20px', marginBottom: '20px', border: '1px solid rgba(14,150,205,0.25)' },
-  loginTitle: { color: 'var(--vn-text)', fontSize: '2rem', fontWeight: '900', margin: '0 0 8px 0', letterSpacing: '-0.03em' },
+  loginRight: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-bg, #FFFFFF)' },
+  loginPortalTag: { display: 'inline-block', background: 'var(--vn-surface)', color: 'var(--rosso)', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '5px 12px', borderRadius: 0, marginBottom: '20px', border: '1px solid var(--rosso)' },
+  loginTitle: { color: 'var(--vn-text)', fontSize: '2rem', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '0.03em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
   loginSub: { color: 'var(--vn-text-sub)', fontSize: '1rem', margin: '0 0 36px 0' },
-  loginLabel: { color: '#b45309', fontSize: '10px', fontWeight: '700', marginBottom: '7px', display: 'block', letterSpacing: '2px', textTransform: 'uppercase' },
-  loginInput: { padding: '14px 16px', borderRadius: '10px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '15px', marginBottom: '6px', outline: 'none', width: '100%', boxSizing: 'border-box' },
+  loginLabel: { color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', marginBottom: '7px', display: 'block', letterSpacing: '2px', textTransform: 'uppercase' },
+  loginInput: { padding: '14px 16px', borderRadius: 0, border: '1px solid var(--vn-line, var(--vn-card-border))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '15px', marginBottom: '6px', outline: 'none', width: '100%', boxSizing: 'border-box' },
   loginEmailHint: { color: 'var(--vn-text-sub)', fontSize: '11px', margin: '0 0 16px', lineHeight: 1.5 },
-  loginBtn: { padding: '16px', borderRadius: '12px', border: 'none', background: '#0E96CD', color: '#fff', fontSize: '16px', fontWeight: '700', cursor: 'pointer', width: '100%' },
-  loginError: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: '8px', border: '1px solid #fecaca', margin: '0 0 14px 0' },
-  loginDivider: { height: '1px', background: 'var(--vn-card-border, rgba(16,24,32,0.12))', margin: '24px 0 16px' },
+  loginBtn: { padding: '16px', borderRadius: 0, border: 'none', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', width: '100%' },
+  loginError: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: 0, border: '1px solid #fecaca', margin: '0 0 14px 0' },
+  loginDivider: { height: '1px', background: 'var(--vn-line, var(--vn-card-border))', margin: '24px 0 16px' },
   loginBizNote: { color: 'var(--vn-text-sub)', fontSize: '13px', margin: '0 0 10px', textAlign: 'center' },
-  loginBizBtn: { width: '100%', padding: '13px 16px', borderRadius: '12px', border: `1.5px solid ${ROYAL}`, background: 'transparent', color: ROYAL, fontSize: '14px', fontWeight: '700', cursor: 'pointer', boxSizing: 'border-box', fontFamily: 'inherit' },
+  loginBizBtn: { width: '100%', padding: '13px 16px', borderRadius: 0, border: '1px solid var(--rosso)', background: 'transparent', color: 'var(--rosso)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', cursor: 'pointer', boxSizing: 'border-box', fontFamily: 'inherit' },
   label: { color: 'var(--vn-text-sub)', fontSize: '12px', fontWeight: '600', display: 'block', marginBottom: '6px' },
-  input: { padding: '10px 14px', borderRadius: '8px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' },
-  primaryBtn: { padding: '12px', borderRadius: '10px', border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', width: '100%' },
-  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: '8px', border: '1px solid #fecaca', margin: '0 0 14px 0' },
+  input: { padding: '10px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' },
+  primaryBtn: { padding: '12px', borderRadius: 0, border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', width: '100%' },
+  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: 0, border: '1px solid #fecaca', margin: '0 0 14px 0' },
   container: { minHeight: '100vh', background: 'var(--vn-bg, #FFF8EA)', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--vn-card, #FFFFFF)', borderBottom: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 100 },
+  topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--vn-card, #FFFFFF)', borderBottom: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: 'none', position: 'sticky', top: 0, zIndex: 100 },
   logo: { color: ROYAL, fontSize: '1.2rem', fontWeight: '800', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' },
-  empBadge: { background: '#e8f4ed', color: '#2e7d52', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '3px 10px', borderRadius: '20px' },
-  uniqueBadge: { background: '#f0e8ff', color: '#6b21a8', fontSize: '10px', fontWeight: '700', letterSpacing: '1px', padding: '3px 10px', borderRadius: '20px' },
+  empBadge: { background: '#e8f4ed', color: '#2e7d52', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '3px 10px', borderRadius: 0 },
+  uniqueBadge: { background: '#f0e8ff', color: '#6b21a8', fontSize: '10px', fontWeight: '700', letterSpacing: '1px', padding: '3px 10px', borderRadius: 0 },
   empName: { color: 'var(--vn-text-sub)', fontSize: '13px', fontWeight: '600' },
-  logoutBtn: { padding: '7px 14px', borderRadius: '8px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
+  logoutBtn: { padding: '7px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
   body: { flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', boxSizing: 'border-box' },
   stepContainer: { width: '100%', maxWidth: '680px' },
   stepHeader: { display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' },
   stepNum: { width: '32px', height: '32px', borderRadius: '50%', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   stepTitle: { color: 'var(--vn-text)', fontSize: '1.1rem', fontWeight: '700', margin: '0 0 2px 0' },
   stepSub: { color: 'var(--vn-text-sub)', fontSize: '13px', margin: 0 },
-  lookupCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '16px', padding: '20px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' },
+  lookupCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '20px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: 'none' },
   lookupRow: { display: 'flex', gap: '10px', alignItems: 'center' },
-  lookupBtn: { padding: '13px 16px', borderRadius: '10px', border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 },
+  lookupBtn: { padding: '13px 16px', borderRadius: 0, border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 },
   lookupHint: { color: 'var(--vn-text-sub)', fontSize: '12px', marginTop: '12px', lineHeight: 1.5 },
   inlineError: { color: '#e03434', fontSize: '13px', marginTop: '8px', marginBottom: 0 },
-  customerBanner: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '14px 16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' },
-  customerAvatar: { width: '40px', height: '40px', borderRadius: '50%', background: '#0E96CD', color: '#fff', fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  customerBanner: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '14px 16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', flexWrap: 'wrap' },
+  customerAvatar: { width: '40px', height: '40px', borderRadius: '50%', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   customerInfo: { flex: 1, minWidth: '100px' },
   customerName: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: '0 0 2px 0' },
   customerBalance: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0 },
-  changeCustomerBtn: { padding: '7px 12px', borderRadius: '8px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', fontSize: '12px', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
+  changeCustomerBtn: { padding: '7px 12px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', fontSize: '12px', fontWeight: '600', cursor: 'pointer', flexShrink: 0 },
   modeToggle: { display: 'flex', gap: '8px', marginBottom: '20px' },
-  modeBtn: { padding: '10px 16px', borderRadius: '10px', border: `1.5px solid ${ROYAL}`, fontSize: '13px', fontWeight: '700', cursor: 'pointer', flex: 1 },
-  emptyMenu: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '32px', textAlign: 'center', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', color: 'var(--vn-text-sub)', fontSize: '14px' },
+  modeBtn: { padding: '10px 16px', borderRadius: 0, border: `1.5px solid ${ROYAL}`, fontSize: '13px', fontWeight: '700', cursor: 'pointer', flex: 1 },
+  emptyMenu: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '32px', textAlign: 'center', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', color: 'var(--vn-text-sub)', fontSize: '14px' },
   menuGrid: { display: 'grid', gap: '10px', marginBottom: '16px' },
-  menuItem: { borderRadius: '14px', padding: '14px', cursor: 'pointer', transition: 'all 0.15s', position: 'relative' },
+  menuItem: { borderRadius: 0, padding: '14px', cursor: 'pointer', transition: 'all 0.15s', position: 'relative' },
   checkMark: { position: 'absolute', top: '10px', right: '12px', fontSize: '14px', fontWeight: '800' },
   menuItemName: { color: 'var(--vn-text)', fontSize: '13px', fontWeight: '700', margin: '0 0 4px 0', paddingRight: '20px' },
   menuItemDesc: { color: 'var(--vn-text-sub)', fontSize: '11px', margin: '0 0 10px 0', lineHeight: 1.4 },
-  earnBadge: { fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '20px', display: 'inline-block' },
-  orderSummary: { borderRadius: '14px', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' },
+  earnBadge: { fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: 0, display: 'inline-block' },
+  orderSummary: { borderRadius: 0, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' },
   orderLeft: { flex: 1, minWidth: '120px' },
   orderLabel: { color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: '600', margin: '0 0 3px 0', textTransform: 'uppercase', letterSpacing: '1px' },
   orderItems: { color: '#fff', fontSize: '13px', fontWeight: '600', margin: 0 },
   orderRight: { display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 },
   orderPoints: { color: '#fff', fontSize: '1.2rem', fontWeight: '800', margin: 0 },
-  confirmBtn: { padding: '9px 16px', borderRadius: '10px', border: 'none', background: '#fff', color: ROYAL, fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' },
-  confirmCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '16px', padding: '20px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' },
+  confirmBtn: { padding: '9px 16px', borderRadius: 0, border: 'none', background: '#fff', color: ROYAL, fontSize: '13px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' },
+  confirmCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '20px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: 'none' },
   confirmSection: { marginBottom: '4px' },
   confirmLabel: { color: 'var(--vn-text-sub)', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 6px 0' },
   confirmValue: { color: 'var(--vn-text)', fontSize: '1rem', fontWeight: '700', margin: '0 0 14px 0' },
@@ -470,20 +466,20 @@ const st = {
   confirmTotalLabel: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: 0 },
   confirmTotalPts: { fontSize: '1.6rem', fontWeight: '800', margin: 0 },
   confirmActions: { display: 'flex', gap: '10px', marginTop: '20px' },
-  backBtn: { padding: '12px 14px', borderRadius: '10px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', flex: 1 },
-  issueBtn: { padding: '12px 14px', borderRadius: '10px', border: 'none', color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', flex: 2 },
-  successCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '20px', padding: '36px 24px', textAlign: 'center', boxShadow: '0 8px 40px rgba(0,0,0,0.08)', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))' },
+  backBtn: { padding: '12px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', flex: 1 },
+  issueBtn: { padding: '12px 14px', borderRadius: 0, border: 'none', color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', flex: 2 },
+  successCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '36px 24px', textAlign: 'center', boxShadow: 'none', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))' },
   successIcon: { width: '60px', height: '60px', borderRadius: '50%', fontSize: '1.6rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' },
   successTitle: { color: 'var(--vn-text)', fontSize: '1.5rem', fontWeight: '800', margin: '0 0 8px 0' },
   successMsg: { color: 'var(--vn-text-sub)', fontSize: '14px', margin: '0 0 20px 0' },
-  newBalanceCard: { background: '#0A1211', borderRadius: '14px', padding: '20px', marginBottom: '18px' },
+  newBalanceCard: { background: '#0A1211', borderRadius: 0, padding: '20px', marginBottom: '18px' },
   newBalanceLabel: { color: 'rgba(255,255,255,0.7)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', margin: '0 0 4px 0' },
   newBalanceAmount: { color: '#fff', fontSize: '2.6rem', fontWeight: '800', margin: 0, lineHeight: 1 },
   newBalanceSub: { color: 'rgba(255,255,255,0.5)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '3px', margin: '4px 0 0 0' },
   successItems: { margin: '0 0 24px 0', textAlign: 'left' },
   successItemsLabel: { color: 'var(--vn-text-sub)', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' },
   successItem: { color: 'var(--vn-text-sub)', fontSize: '13px', margin: '0 0 3px 0' },
-  newTransactionBtn: { padding: '13px 28px', borderRadius: '12px', border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer' },
+  newTransactionBtn: { padding: '13px 28px', borderRadius: 0, border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer' },
 };
 
 export default EmployeeDashboard;

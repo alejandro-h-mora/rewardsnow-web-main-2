@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import { API } from './config';
 
 function Login({ onLogin }) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,19 +41,16 @@ function Login({ onLogin }) {
 
           {isMobile ? (
               <div style={styles.mobileHeader}>
-                <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.4rem', color:'#1692A2', letterSpacing:'-0.03em', cursor:'pointer'}} onClick={() => navigate('/')}>Veniar</span>
+                <span style={styles.wordmark} onClick={() => navigate('/')}>VENIAR</span>
                 <span style={styles.mobileHeaderSub}>Earn rewards everywhere</span>
               </div>
           ) : (
-              <div style={{
-                ...styles.leftPanel,
-                background: isDark ? '#0A1211' : 'var(--vn-section-alt, #F5F5F4)',
-              }}>
+              <div style={styles.leftPanel}>
               <div style={styles.leftContent}>
-                  <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.4rem', color: isDark ? '#FFF8EA' : '#1692A2', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'20px'}} onClick={() => navigate('/')}>Veniar</span>
+                  <span style={{ ...styles.wordmark, color: '#FFF8EA', display: 'block', marginBottom: '24px' }} onClick={() => navigate('/')}>VENIAR</span>
                   <div style={styles.goldLine} />
-                  <p style={{ ...styles.tagline, color: isDark ? '#FFF8EA' : 'var(--vn-text)' }}>Earn rewards while supporting local businesses.</p>
-                  <p style={{ ...styles.leftDesc, color: isDark ? 'rgba(255,248,234,0.65)' : 'var(--vn-text-sub)' }}>Discover participating restaurants, cafés, shops, and local services. Earn and redeem rewards across the <em>Veniar</em> Network.</p>
+                  <p style={styles.tagline}>Earn rewards while supporting local businesses.</p>
+                  <p style={styles.leftDesc}>Discover participating restaurants, cafés, shops, and local services. Earn and redeem rewards across the <em>Veniar</em> Network.</p>
                 </div>
               </div>
           )}
@@ -64,7 +59,7 @@ function Login({ onLogin }) {
             ...styles.rightPanel,
             width: isMobile ? '100%' : '500px',
             padding: isMobile ? '32px 24px 48px' : '80px 64px',
-            boxShadow: isMobile ? 'none' : '-8px 0 40px rgba(0,0,0,0.06)',
+            borderLeft: isMobile ? 'none' : '1px solid var(--vn-line, var(--vn-card-border))',
             flex: isMobile ? '1' : 'none',
           }}>
             <h1 style={{ ...styles.brandName, fontSize: isMobile ? '1.8rem' : '2.2rem' }}>Welcome back</h1>
@@ -114,26 +109,27 @@ const styles = {
   loginWrapper: { display: 'flex', flex: 1, minHeight: 0 },
   mobileHeader: { background: 'var(--vn-bg, #FFF8EA)', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' },
   mobileHeaderSub: { color: 'var(--vn-text-sub, #5F6B73)', fontSize: '13px', marginTop: '4px' },
-  leftPanel: { flex: 1, background: '#0A1211', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
+  wordmark: { fontFamily: "'Archivo', 'Inter', sans-serif", fontStretch: 'expanded', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.08em', color: 'var(--vn-text)', cursor: 'pointer' },
+  leftPanel: { flex: 1, background: '#0E0D0C', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
   leftContent: { position: 'relative', zIndex: 2 },
-  goldLine: { width: '48px', height: '3px', background: '#F2B84B', marginBottom: '32px', borderRadius: '2px' },
-  tagline: { color: '#FFF8EA', fontSize: '3.6rem', fontWeight: '900', lineHeight: 1.06, margin: '0 0 20px 0', maxWidth: '440px', letterSpacing: '-0.03em' },
+  goldLine: { width: '48px', height: '1px', background: 'var(--vn-line, rgba(255,248,234,0.16))', marginBottom: '32px' },
+  tagline: { color: '#FFF8EA', fontSize: '3rem', fontWeight: 800, lineHeight: 1.06, margin: '0 0 20px 0', maxWidth: '460px', letterSpacing: '0.02em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
   leftDesc: { color: 'rgba(255,248,234,0.65)', fontSize: '15px', lineHeight: 1.7, margin: 0, maxWidth: '360px' },
-  rightPanel: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-card, #FFFFFF)', boxSizing: 'border-box' },
-  brandName: { color: 'var(--vn-text)', fontWeight: '900', margin: '0 0 8px 0', letterSpacing: '-0.03em' },
+  rightPanel: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-bg, #FFFFFF)', boxSizing: 'border-box' },
+  brandName: { color: 'var(--vn-text)', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '0.04em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
   brandSub: { color: 'var(--vn-text-sub)', fontSize: '1rem', margin: '0 0 36px 0' },
   inputLabel: { color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', marginBottom: '7px', display: 'block', letterSpacing: '2px', textTransform: 'uppercase' },
-  input: { padding: '14px 16px', borderRadius: '10px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '15px', marginBottom: '20px', outline: 'none', width: '100%', boxSizing: 'border-box' },
-  loginBtn: { padding: '16px', borderRadius: '10px', border: 'none', background: '#0E96CD', color: '#ffffff', fontSize: '16px', fontWeight: '700', cursor: 'pointer', width: '100%', letterSpacing: '0.01em' },
-  forgotLink: { background: 'none', border: 'none', padding: 0, color: '#0E96CD', fontSize: '13px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
-  registerBtn: { padding: '15px', borderRadius: '12px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.18))', background: 'transparent', color: 'var(--vn-text)', fontSize: '15px', fontWeight: '600', cursor: 'pointer', width: '100%' },
-  bizRegisterBtn: { padding: '15px', borderRadius: '12px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.18))', background: 'transparent', color: 'var(--vn-text)', fontSize: '15px', fontWeight: '600', cursor: 'pointer', width: '100%', marginTop: '10px' },
+  input: { padding: '14px 16px', borderRadius: 0, border: '1px solid var(--vn-line, var(--vn-card-border))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '15px', marginBottom: '20px', outline: 'none', width: '100%', boxSizing: 'border-box' },
+  loginBtn: { padding: '16px', borderRadius: 0, border: 'none', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '13px', fontWeight: 700, cursor: 'pointer', width: '100%', letterSpacing: '0.08em', textTransform: 'uppercase' },
+  forgotLink: { background: 'none', border: 'none', padding: 0, color: 'var(--rosso)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
+  registerBtn: { padding: '15px', borderRadius: 0, border: '1px solid var(--vn-line, var(--vn-card-border))', background: 'transparent', color: 'var(--vn-text)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', width: '100%' },
+  bizRegisterBtn: { padding: '15px', borderRadius: 0, border: '1px solid var(--vn-line, var(--vn-card-border))', background: 'transparent', color: 'var(--vn-text)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', width: '100%', marginTop: '10px' },
   divider: { display: 'flex', alignItems: 'center', gap: '12px', margin: '24px 0' },
-  dividerLine: { flex: 1, height: '1px', background: 'var(--vn-card-border, rgba(16,24,32,0.12))' },
+  dividerLine: { flex: 1, height: '1px', background: 'var(--vn-line, var(--vn-card-border))' },
   dividerText: { color: 'var(--vn-text-sub)', fontSize: '13px' },
-  error: { color: '#dc2626', fontSize: '13px', margin: '0 0 14px 0', background: '#fff0f0', padding: '10px 14px', borderRadius: '8px', border: '1px solid #ffd0d0' },
+  error: { color: '#dc2626', fontSize: '13px', margin: '0 0 14px 0', background: '#fff0f0', padding: '10px 14px', borderRadius: 0, border: '1px solid #ffd0d0' },
   terms: { color: 'var(--vn-text-sub)', fontSize: '12px', textAlign: 'center', marginTop: '20px', lineHeight: 1.6 },
-  link: { color: '#0E96CD', cursor: 'pointer' },
+  link: { color: 'var(--rosso)', cursor: 'pointer' },
 };
 
 export default Login;

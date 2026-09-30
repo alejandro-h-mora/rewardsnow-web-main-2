@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
 import { API } from './config';
 
-const ROYAL = '#0E96CD';
+const ROYAL = 'var(--rosso)';
 
 function BusinessOwnerDashboard() {
   const isMobile = useIsMobile();
@@ -34,6 +34,21 @@ function BusinessOwnerDashboard() {
   const [svcForm, setSvcForm] = useState({ name: '', description: '', rewardsCost: '', rewardsGrant: '' });
   const [showSvcForm, setShowSvcForm] = useState(false);
   const [editingSvc, setEditingSvc] = useState(null);
+
+  // Trial period + public/private visibility. Backed by endpoints that
+  // don't exist yet in the current API -- see docs/backend-onboarding-pipeline.md
+  // for the full contract these calls are written against.
+  const [trial, setTrial] = useState({
+    status: 'TRIAL', // TRIAL | PENDING_REVIEW | APPROVED
+    visibility: 'PRIVATE', // PRIVATE | PUBLIC -- only changeable once APPROVED
+    taxDocumentsSubmitted: false,
+    taxDocumentFileName: '',
+    businessBio: '',
+    pricingPercent: null, // set by admin on approval, e.g. 8 (%)
+  });
+  const [bioDraft, setBioDraft] = useState('');
+  const [trialSaving, setTrialSaving] = useState(false);
+  const [trialMsg, setTrialMsg] = useState({ text: '', type: '' });
 
   const [offers, setOffers] = useState([]);
   const [settlement, setSettlement] = useState(null);
@@ -122,6 +137,18 @@ function BusinessOwnerDashboard() {
     setLoading(false);
   };
 
+  const fetchTrial = async () => {
+    if (!account?.businessId) return;
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/onboarding`, { headers: auth });
+      if (res.ok) {
+        const d = await res.json();
+        setTrial(prev => ({ ...prev, ...d }));
+        setBioDraft(d.businessBio || '');
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     if (!token || !account) return;
     if (tab === 'employees') fetchEmployees();
@@ -129,6 +156,7 @@ function BusinessOwnerDashboard() {
     if (tab === 'stats') fetchStats();
     if (tab === 'offers') fetchOffers();
     if (tab === 'settlement') fetchSettlement();
+    if (tab === 'trial') { fetchEmployees(); fetchTrial(); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, account, tab]);
 
@@ -282,8 +310,91 @@ function BusinessOwnerDashboard() {
     setSettingsPwSaving(false);
   };
 
+  const employeeInfraReady = employees.length > 0;
+  const bioReady = (trial.businessBio || '').trim().length >= 40;
+  const trialRequirementsMet = trial.taxDocumentsSubmitted && employeeInfraReady && bioReady;
+
+  const handleTaxUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !account?.businessId) return;
+    setTrialSaving(true);
+    setTrialMsg({ text: '', type: '' });
+    try {
+      const formData = new FormData();
+      formData.append('taxDocument', file);
+      const res = await fetch(`${API}/businesses/${account.businessId}/tax-documents`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Endpoint doesn't exist in the backend yet -- update the UI
+      // optimistically so the flow is reviewable; see the pipeline doc.
+    }
+    setTrial(prev => ({ ...prev, taxDocumentsSubmitted: true, taxDocumentFileName: file.name }));
+    setTrialMsg({ text: 'Tax document received.', type: 'success' });
+    setTrialSaving(false);
+  };
+
+  const handleSaveBio = async () => {
+    if (!account?.businessId || trialSaving) return;
+    if (bioDraft.trim().length < 40) {
+      setTrialMsg({ text: 'Bio should be at least 40 characters so it reads well next to your listing.', type: 'error' });
+      return;
+    }
+    setTrialSaving(true);
+    setTrialMsg({ text: '', type: '' });
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/bio`, {
+        method: 'PATCH', headers: auth,
+        body: JSON.stringify({ businessBio: bioDraft }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Same as above -- optimistic until the backend endpoint exists.
+    }
+    setTrial(prev => ({ ...prev, businessBio: bioDraft }));
+    setTrialMsg({ text: 'Bio saved.', type: 'success' });
+    setTrialSaving(false);
+  };
+
+  const handleSubmitForReview = async () => {
+    if (!account?.businessId || trialSaving || !trialRequirementsMet) return;
+    setTrialSaving(true);
+    setTrialMsg({ text: '', type: '' });
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/onboarding/submit`, {
+        method: 'POST', headers: auth,
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Optimistic -- see pipeline doc for the real endpoint.
+    }
+    setTrial(prev => ({ ...prev, status: 'PENDING_REVIEW' }));
+    setTrialMsg({ text: 'Submitted for review. An admin will confirm your pricing and take you public.', type: 'success' });
+    setTrialSaving(false);
+  };
+
+  const handleSetVisibility = async (visibility) => {
+    if (!account?.businessId || trial.status !== 'APPROVED' || trial.visibility === visibility) return;
+    setTrialSaving(true);
+    try {
+      const res = await fetch(`${API}/businesses/${account.businessId}/visibility`, {
+        method: 'PATCH', headers: auth,
+        body: JSON.stringify({ visibility }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // Optimistic -- see pipeline doc for the real endpoint.
+    }
+    setTrial(prev => ({ ...prev, visibility }));
+    setTrialMsg({ text: visibility === 'PUBLIC' ? 'You are now visible on the map and in search.' : 'Your listing is now private.', type: 'success' });
+    setTrialSaving(false);
+  };
+
   const Skeleton = ({ h = 72 }) => (
-      <div style={{ height: h, borderRadius: 12, marginBottom: 12, background: 'linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
+      <div style={{ height: h, borderRadius: 0, marginBottom: 12, background: 'linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
   );
 
   if (!token) {
@@ -292,7 +403,7 @@ function BusinessOwnerDashboard() {
           {!isMobile && (
               <div style={s.loginLeft}>
                 <div style={s.loginLeftContent}>
-                  <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.5rem', color:'#FFF8EA', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'20px'}} onClick={() => navigate('/business-overview')}>Veniar</span>
+                  <span style={{ ...s.loginWordmark, color: '#FFF8EA', display: 'block', marginBottom: '24px' }} onClick={() => navigate('/business-overview')}>VENIAR</span>
                   <div style={s.loginGoldLine} />
                   <h1 style={s.loginHeadline}>Run your business.<br />Reward your customers.</h1>
                   <p style={s.loginDesc}>Manage employees, services, and analytics from your business portal.</p>
@@ -300,7 +411,7 @@ function BusinessOwnerDashboard() {
               </div>
           )}
           <div style={{ ...s.loginRight, width: isMobile ? '100%' : '480px', flex: isMobile ? 1 : 'none', padding: isMobile ? '48px 24px' : '80px 64px', boxSizing: 'border-box' }}>
-            {isMobile && <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.4rem', color:'#0E96CD', letterSpacing:'-0.03em', cursor:'pointer', display:'block', marginBottom:'28px'}} onClick={() => navigate('/business-overview')}>Veniar</span>}
+            {isMobile && <span style={{ ...s.loginWordmark, display: 'block', marginBottom: '28px' }} onClick={() => navigate('/business-overview')}>VENIAR</span>}
             <span style={s.loginPortalTag}>BUSINESS PORTAL</span>
             <h2 style={s.loginTitle}>Owner Dashboard</h2>
             <p style={s.loginSub}>Sign in with your business account</p>
@@ -323,6 +434,7 @@ function BusinessOwnerDashboard() {
   const isApproved = account?.hasBusiness && account?.businessId;
   const TABS = [
     { key: 'overview', label: 'Overview' },
+    { key: 'trial', label: 'Trial & Visibility' },
     { key: 'stats', label: 'Analytics' },
     { key: 'offers', label: 'Offers' },
     { key: 'settlement', label: 'Settlement' },
@@ -336,7 +448,7 @@ function BusinessOwnerDashboard() {
         <div style={s.topBar}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button style={s.logo} onClick={() => navigate('/')}>
-              <span style={{fontStyle:'italic', fontWeight:800, fontSize:'1.2rem', color:'#0E96CD', letterSpacing:'-0.03em'}}>Veniar</span>
+              <span style={{ fontFamily: "'Archivo', 'Inter', sans-serif", fontStretch: 'expanded', fontWeight: 800, fontSize: '1rem', color: 'var(--vn-text)', letterSpacing: '0.08em' }}>VENIAR</span>
             </button>
             {!isMobile && <span style={s.portalBadge}>BUSINESS</span>}
           </div>
@@ -393,7 +505,7 @@ function BusinessOwnerDashboard() {
                         <p style={s.statusEmail}>{account?.email}</p>
                       </div>
                     </div>
-                    <div style={{ padding: '7px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: isApproved ? '#e8f4ed' : '#fff8e1', color: isApproved ? '#2e7d52' : '#e0a020', alignSelf: isMobile ? 'flex-start' : 'center' }}>
+                    <div style={{ padding: '7px 14px', borderRadius: 0, fontSize: '12px', fontWeight: '700', background: isApproved ? '#e8f4ed' : '#fff8e1', color: isApproved ? '#2e7d52' : '#e0a020', alignSelf: isMobile ? 'flex-start' : 'center' }}>
                       {isApproved ? 'Active' : 'Pending Approval'}
                     </div>
                   </div>
@@ -405,6 +517,7 @@ function BusinessOwnerDashboard() {
                   ) : (
                       <div style={{ ...s.quickGrid, gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(180px, 1fr))' }}>
                         {[
+                          { label: 'Trial & Visibility', sub: trial.status === 'APPROVED' ? `${trial.visibility === 'PUBLIC' ? 'Public' : 'Private'} listing` : 'Complete your trial', key: 'trial' },
                           { label: 'Analytics', sub: 'View points activity', key: 'stats' },
                           { label: 'Employees', sub: 'Manage staff', key: 'employees' },
                           { label: 'Services', sub: 'Manage menu', key: 'services' },
@@ -416,6 +529,137 @@ function BusinessOwnerDashboard() {
                         ))}
                       </div>
                   )}
+                </>
+            )}
+
+            {tab === 'trial' && isApproved && (
+                <>
+                  <h2 style={s.pageTitle}>Trial & Visibility</h2>
+
+                  <div style={{ ...s.statusCard, flexDirection: isMobile ? 'column' : 'row' }}>
+                    <div>
+                      <p style={s.statusName}>
+                        {trial.status === 'APPROVED' ? 'Trial complete' : trial.status === 'PENDING_REVIEW' ? 'Submitted for review' : 'In trial period'}
+                      </p>
+                      <p style={s.statusEmail}>
+                        {trial.status === 'APPROVED'
+                          ? `Billing is ${trial.pricingPercent != null ? `${trial.pricingPercent}% of revenue` : 'a percentage of revenue, set by the team on approval'}.`
+                          : trial.status === 'PENDING_REVIEW'
+                          ? 'Our team is confirming your documents, staff setup, and bio.'
+                          : 'Complete the three requirements below, then submit for review.'}
+                      </p>
+                    </div>
+                    <div style={{
+                      padding: '7px 14px', borderRadius: 0, fontSize: '12px', fontWeight: '700', alignSelf: isMobile ? 'flex-start' : 'center',
+                      background: trial.status === 'APPROVED' ? '#e8f4ed' : trial.status === 'PENDING_REVIEW' ? '#eff6ff' : '#fff8e1',
+                      color: trial.status === 'APPROVED' ? '#2e7d52' : trial.status === 'PENDING_REVIEW' ? ROYAL : '#e0a020',
+                    }}>
+                      {trial.status === 'APPROVED' ? 'Approved' : trial.status === 'PENDING_REVIEW' ? 'Pending Review' : 'Trial Period'}
+                    </div>
+                  </div>
+
+                  {trialMsg.text && (
+                    <p style={{ ...s.settingsFeedback, color: trialMsg.type === 'error' ? '#c0392b' : '#2e7d52', background: trialMsg.type === 'error' ? '#fdeaea' : '#e8f4ed', border: `1px solid ${trialMsg.type === 'error' ? '#fbc0c0' : '#a8d5b5'}` }}>
+                      {trialMsg.text}
+                    </p>
+                  )}
+
+                  {/* Visibility */}
+                  <div style={s.settingsCard}>
+                    <p style={s.settingsCardTitle}>Listing visibility</p>
+                    <p style={s.settingsCardSub}>
+                      {trial.status === 'APPROVED'
+                        ? 'Control whether customers can find you on the map, in search, and in the business list.'
+                        : 'Your listing stays private and is hidden from customers until your trial is approved.'}
+                    </p>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      {['PRIVATE', 'PUBLIC'].map(v => (
+                        <button
+                          key={v}
+                          disabled={trial.status !== 'APPROVED' || trialSaving}
+                          onClick={() => handleSetVisibility(v)}
+                          style={{
+                            ...s.visToggleBtn,
+                            ...(trial.visibility === v ? s.visToggleBtnActive : {}),
+                            opacity: trial.status !== 'APPROVED' ? 0.5 : 1,
+                            cursor: trial.status !== 'APPROVED' ? 'not-allowed' : 'pointer',
+                          }}
+                        >
+                          {v === 'PRIVATE' ? 'Private' : 'Public'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Requirements checklist */}
+                  <div style={s.settingsCard}>
+                    <p style={s.settingsCardTitle}>Trial requirements</p>
+                    <p style={s.settingsCardSub}>All three are required before your business can go public. Pricing is a percentage of revenue, confirmed from your tax documents.</p>
+
+                    <div style={s.reqRow}>
+                      <div style={s.reqHead}>
+                        <span style={{ ...s.reqCheck, ...(trial.taxDocumentsSubmitted ? s.reqCheckDone : {}) }}>{trial.taxDocumentsSubmitted ? '✓' : '1'}</span>
+                        <div>
+                          <p style={s.reqTitle}>Tax documents</p>
+                          <p style={s.reqDesc}>
+                            {trial.taxDocumentsSubmitted
+                              ? `Received: ${trial.taxDocumentFileName || 'document on file'}`
+                              : 'Upload your business tax documents so pricing can be set as a percentage of revenue.'}
+                          </p>
+                        </div>
+                      </div>
+                      <label style={{ ...s.addBtn, display: 'inline-block', opacity: trialSaving ? 0.7 : 1, cursor: trialSaving ? 'not-allowed' : 'pointer' }}>
+                        {trial.taxDocumentsSubmitted ? 'Replace file' : 'Upload'}
+                        <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={handleTaxUpload} disabled={trialSaving} style={{ display: 'none' }} />
+                      </label>
+                    </div>
+
+                    <div style={s.reqRow}>
+                      <div style={s.reqHead}>
+                        <span style={{ ...s.reqCheck, ...(employeeInfraReady ? s.reqCheckDone : {}) }}>{employeeInfraReady ? '✓' : '2'}</span>
+                        <div>
+                          <p style={s.reqTitle}>Employee infrastructure</p>
+                          <p style={s.reqDesc}>
+                            {employeeInfraReady
+                              ? `${employees.length} employee${employees.length === 1 ? '' : 's'} added.`
+                              : 'Add at least one employee account so staff can process redemptions at checkout.'}
+                          </p>
+                        </div>
+                      </div>
+                      <button style={s.editBtn} onClick={() => setTab('employees')}>Manage employees →</button>
+                    </div>
+
+                    <div style={{ ...s.reqRow, flexDirection: 'column', alignItems: 'stretch' }}>
+                      <div style={s.reqHead}>
+                        <span style={{ ...s.reqCheck, ...(bioReady ? s.reqCheckDone : {}) }}>{bioReady ? '✓' : '3'}</span>
+                        <div>
+                          <p style={s.reqTitle}>Business bio</p>
+                          <p style={s.reqDesc}>Write a short description of who you are. It appears alongside your listing once you go public.</p>
+                        </div>
+                      </div>
+                      <textarea
+                        style={s.bioTextarea}
+                        rows={4}
+                        placeholder="We're a family-owned coffee shop serving the neighborhood since 2014…"
+                        value={bioDraft}
+                        onChange={e => setBioDraft(e.target.value)}
+                      />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={s.reqDesc}>{bioDraft.trim().length}/40 characters minimum</span>
+                        <button style={{ ...s.addBtn, opacity: trialSaving ? 0.7 : 1 }} onClick={handleSaveBio} disabled={trialSaving}>
+                          Save bio
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    style={{ ...s.btn, opacity: (!trialRequirementsMet || trial.status !== 'TRIAL' || trialSaving) ? 0.6 : 1, cursor: (!trialRequirementsMet || trial.status !== 'TRIAL') ? 'not-allowed' : 'pointer' }}
+                    onClick={handleSubmitForReview}
+                    disabled={!trialRequirementsMet || trial.status !== 'TRIAL' || trialSaving}
+                  >
+                    {trial.status === 'PENDING_REVIEW' ? 'Submitted — awaiting review' : trial.status === 'APPROVED' ? 'Trial approved' : 'Submit for review'}
+                  </button>
                 </>
             )}
 
@@ -666,7 +910,7 @@ function BusinessOwnerDashboard() {
                                       <span style={{ color: '#2e7d52', fontWeight: '600' }}>{row.issued?.toLocaleString()}</span>
                                       <span style={{ color: '#c0392b', fontWeight: '600' }}>{row.redeemed?.toLocaleString()}</span>
                                       <span style={{ color: row.net >= 0 ? '#2e7d52' : '#c0392b', fontWeight: '700' }}>{row.net >= 0 ? `+${row.net?.toLocaleString()}` : row.net?.toLocaleString()}</span>
-                                      <span style={{ padding: '2px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: row.status === 'settled' ? '#e8f4ed' : '#fff8e1', color: row.status === 'settled' ? '#2e7d52' : '#7a5500' }}>
+                                      <span style={{ padding: '2px 8px', borderRadius: 0, fontSize: '11px', fontWeight: '700', background: row.status === 'settled' ? '#e8f4ed' : '#fff8e1', color: row.status === 'settled' ? '#2e7d52' : '#7a5500' }}>
                                         {row.status ?? 'Pending'}
                                       </span>
                                     </div>
@@ -745,7 +989,7 @@ function BusinessOwnerDashboard() {
                                 </span>
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0 }}>
-                                <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '20px', background: emp.active ? '#e8f4ed' : '#fdeaea', color: emp.active ? '#2e7d52' : '#c0392b' }}>
+                                <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: 0, background: emp.active ? '#e8f4ed' : '#fdeaea', color: emp.active ? '#2e7d52' : '#c0392b' }}>
                                   {emp.active ? 'Active' : 'Inactive'}
                                 </span>
                                 {emp.active && (
@@ -900,113 +1144,123 @@ function BusinessOwnerDashboard() {
 }
 
 const s = {
-  loginLeft: { flex: 1, background: '#0A1211', display: 'flex', alignItems: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
+  loginLeft: { flex: 1, background: '#0E0D0C', display: 'flex', alignItems: 'center', padding: '80px', position: 'relative', overflow: 'hidden' },
   loginLeftContent: { position: 'relative', zIndex: 2 },
-  loginGoldLine: { width: '56px', height: '3px', background: '#F8C922', marginBottom: '32px', borderRadius: '2px' },
-  loginHeadline: { color: '#FFF8EA', fontSize: '3.2rem', fontWeight: '900', lineHeight: 1.08, letterSpacing: '-0.03em', margin: '0 0 20px 0', maxWidth: '440px' },
+  loginWordmark: { fontFamily: "'Archivo', 'Inter', sans-serif", fontStretch: 'expanded', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.08em', color: 'var(--vn-text)', cursor: 'pointer' },
+  loginGoldLine: { width: '56px', height: '1px', background: 'var(--vn-line, rgba(255,248,234,0.16))', marginBottom: '32px' },
+  loginHeadline: { color: '#FFF8EA', fontSize: '2.8rem', fontWeight: 800, lineHeight: 1.08, letterSpacing: '0.02em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif", margin: '0 0 20px 0', maxWidth: '460px' },
   loginDesc: { color: 'rgba(255,248,234,0.65)', fontSize: '15px', lineHeight: 1.7, margin: 0, maxWidth: '360px' },
-  loginRight: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-card, #FFFFFF)' },
-  loginPortalTag: { display: 'inline-block', background: 'rgba(14,150,205,0.10)', color: '#0E96CD', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '5px 12px', borderRadius: '20px', marginBottom: '20px', border: '1px solid rgba(14,150,205,0.25)' },
-  loginTitle: { color: 'var(--vn-text)', fontSize: '2rem', fontWeight: '900', margin: '0 0 8px 0', letterSpacing: '-0.03em' },
+  loginRight: { display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--vn-bg, #FFFFFF)' },
+  loginPortalTag: { display: 'inline-block', background: 'var(--vn-surface)', color: 'var(--rosso)', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '5px 12px', borderRadius: 0, marginBottom: '20px', border: '1px solid var(--rosso)' },
+  loginTitle: { color: 'var(--vn-text)', fontSize: '2rem', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '0.03em', textTransform: 'uppercase', fontFamily: "'Archivo', 'Inter', sans-serif" },
   loginSub: { color: 'var(--vn-text-sub)', fontSize: '1rem', margin: '0 0 36px 0' },
-  loginLabel: { color: '#b45309', fontSize: '10px', fontWeight: '700', marginBottom: '7px', display: 'block', letterSpacing: '2px', textTransform: 'uppercase' },
-  loginInput: { padding: '14px 16px', borderRadius: '10px', border: '2px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '15px', marginBottom: '20px', outline: 'none', width: '100%', boxSizing: 'border-box' },
-  loginBtn: { padding: '16px', borderRadius: '12px', border: 'none', background: '#0E96CD', color: '#fff', fontSize: '16px', fontWeight: '700', cursor: 'pointer', width: '100%' },
-  loginError: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: '8px', border: '1px solid #fecaca', margin: '0 0 14px 0' },
+  loginLabel: { color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', marginBottom: '7px', display: 'block', letterSpacing: '2px', textTransform: 'uppercase' },
+  loginInput: { padding: '14px 16px', borderRadius: 0, border: '1px solid var(--vn-line, var(--vn-card-border))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '15px', marginBottom: '20px', outline: 'none', width: '100%', boxSizing: 'border-box' },
+  loginBtn: { padding: '16px', borderRadius: 0, border: 'none', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', cursor: 'pointer', width: '100%' },
+  loginError: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: 0, border: '1px solid #fecaca', margin: '0 0 14px 0' },
   label: { color: 'var(--vn-text-sub)', fontSize: '12px', fontWeight: '600', display: 'block', marginBottom: '6px' },
-  input: { padding: '10px 14px', borderRadius: '8px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' },
-  btn: { padding: '12px', borderRadius: '10px', border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', width: '100%' },
-  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: '8px', border: '1px solid #fecaca', margin: '0 0 14px 0' },
+  input: { padding: '10px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' },
+  btn: { padding: '12px', borderRadius: 0, border: 'none', background: ROYAL, color: '#fff', fontSize: '14px', fontWeight: '700', cursor: 'pointer', width: '100%' },
+  error: { color: '#dc2626', fontSize: '13px', background: '#fef2f2', padding: '10px 14px', borderRadius: 0, border: '1px solid #fecaca', margin: '0 0 14px 0' },
   container: { minHeight: '100vh', background: 'var(--vn-bg, #FFF8EA)', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: 'flex', flexDirection: 'column' },
-  topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', background: 'var(--vn-card, #FFFFFF)', borderBottom: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 100 },
+  topBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', background: 'var(--vn-card, #FFFFFF)', borderBottom: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', boxShadow: 'none', position: 'sticky', top: 0, zIndex: 100 },
   logo: { background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', lineHeight: 0 },
-  portalBadge: { background: ROYAL, color: '#fff', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '3px 10px', borderRadius: '20px' },
-  logoutBtn: { padding: '7px 14px', borderRadius: '8px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
-  empPortalBtn: { padding: '7px 14px', borderRadius: '8px', border: `1.5px solid ${ROYAL}`, background: 'transparent', color: ROYAL, fontSize: '12px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' },
+  portalBadge: { background: ROYAL, color: '#fff', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', padding: '3px 10px', borderRadius: 0 },
+  logoutBtn: { padding: '7px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', background: 'transparent', color: 'var(--vn-text-sub)', cursor: 'pointer', fontSize: '13px', fontWeight: '600' },
+  empPortalBtn: { padding: '7px 14px', borderRadius: 0, border: `1.5px solid ${ROYAL}`, background: 'transparent', color: ROYAL, fontSize: '12px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' },
   loginDivider: { height: '1px', background: 'var(--vn-card-border, rgba(16,24,32,0.12))', margin: '20px 0' },
   loginEmpNote: { color: 'var(--vn-text-sub)', fontSize: '13px', margin: '0 0 6px 0' },
-  loginEmpLink: { display: 'block', width: '100%', boxSizing: 'border-box', color: ROYAL, fontSize: '14px', fontWeight: '700', padding: '12px 16px', borderRadius: '10px', border: `1.5px solid ${ROYAL}`, textAlign: 'center', background: 'transparent', cursor: 'pointer', fontFamily: 'inherit' },
-  empPortalCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '16px 18px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.12))', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' },
+  loginEmpLink: { display: 'block', width: '100%', boxSizing: 'border-box', color: 'var(--rosso)', fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', padding: '12px 16px', borderRadius: 0, border: '1px solid var(--rosso)', textAlign: 'center', background: 'transparent', cursor: 'pointer', fontFamily: 'inherit' },
+  empPortalCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '16px 18px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.12))', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' },
   empPortalCardTitle: { color: 'var(--vn-text)', fontSize: '13px', fontWeight: '700', margin: '0 0 4px 0' },
   empPortalCardSub: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0, lineHeight: 1.5 },
-  empPortalCardBtn: { padding: '10px 18px', borderRadius: '10px', border: 'none', background: ROYAL, color: '#fff', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer', fontFamily: 'inherit' },
+  empPortalCardBtn: { padding: '10px 18px', borderRadius: 0, border: 'none', background: ROYAL, color: '#fff', fontSize: '13px', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0, cursor: 'pointer', fontFamily: 'inherit' },
   userName: { color: 'var(--vn-text-sub)', fontSize: '13px', fontWeight: '600' },
   mobileTabs: { display: 'flex', background: 'var(--vn-card, #FFFFFF)', borderBottom: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', overflowX: 'auto', flexShrink: 0 },
   mobileTab: { flexShrink: 0, padding: '12px 16px', background: 'none', border: 'none', fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' },
   body: { display: 'flex', flex: 1 },
   sidebar: { width: '190px', background: 'var(--vn-card, #FFFFFF)', borderRight: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', padding: '20px 10px', display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0 },
-  navBtn: { padding: '10px 14px', borderRadius: '10px', border: 'none', fontSize: '13px', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s' },
+  navBtn: { padding: '10px 14px', borderRadius: 0, border: 'none', fontSize: '13px', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s' },
   content: { flex: 1, overflowY: 'auto', minWidth: 0 },
-  banner: { padding: '12px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: '600', marginBottom: '20px' },
+  banner: { padding: '12px 16px', borderRadius: 0, fontSize: '13px', fontWeight: '600', marginBottom: '20px' },
   pageTitle: { color: 'var(--vn-text)', fontSize: '1.2rem', fontWeight: '700', margin: 0 },
   tabHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' },
-  addBtn: { padding: '9px 16px', borderRadius: '10px', border: 'none', background: ROYAL, color: '#fff', fontSize: '13px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
-  empty: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '16px', padding: '40px 24px', textAlign: 'center', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', color: 'var(--vn-text-sub)' },
-  statusCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '16px', padding: '18px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '12px' },
+  addBtn: { padding: '9px 16px', borderRadius: 0, border: 'none', background: ROYAL, color: '#fff', fontSize: '13px', fontWeight: '700', cursor: 'pointer', flexShrink: 0 },
+  empty: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '40px 24px', textAlign: 'center', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', color: 'var(--vn-text-sub)' },
+  statusCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '18px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '12px' },
   statusLeft: { display: 'flex', alignItems: 'center', gap: '12px' },
-  bizInitial: { width: '42px', height: '42px', borderRadius: '12px', background: '#0E96CD', color: '#fff', fontSize: '1.1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  bizInitial: { width: '42px', height: '42px', borderRadius: 0, background: 'var(--rosso)', color: '#FFF8EA', fontSize: '1.1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   statusName: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: '0 0 2px 0' },
   statusEmail: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0 },
-  pendingNote: { background: '#fff8e1', borderRadius: '14px', padding: '16px 18px', border: '1px solid #ffe082', marginBottom: '16px' },
+  pendingNote: { background: '#fff8e1', borderRadius: 0, padding: '16px 18px', border: '1px solid #ffe082', marginBottom: '16px' },
   pendingTitle: { color: '#7a5500', fontSize: '13px', fontWeight: '700', margin: '0 0 4px 0' },
   pendingSub: { color: '#7a5500', fontSize: '12px', margin: 0, lineHeight: 1.6 },
   quickGrid: { display: 'grid', gap: '12px' },
-  quickCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '18px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', cursor: 'pointer' },
+  quickCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '18px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', cursor: 'pointer' },
   quickLabel: { color: ROYAL, fontSize: '14px', fontWeight: '700', margin: '0 0 4px 0' },
   quickSub: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0 },
   statsGrid: { display: 'grid', gap: '12px' },
-  statsTableWrap: { display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))' },
+  statsTableWrap: { display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 0, overflow: 'hidden', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))' },
   statGridCell: { padding: '20px 18px' },
-  statCard: { borderRadius: '14px', padding: '18px', border: '1px solid #eee' },
+  statCard: { borderRadius: 0, padding: '18px', border: '1px solid #eee' },
   statValue: { fontWeight: '800', margin: '0 0 6px 0', lineHeight: 1 },
   statLabel: { color: '#555', fontSize: '12px', fontWeight: '600', margin: 0 },
-  formCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '18px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', marginBottom: '16px' },
+  formCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '18px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.10))', marginBottom: '16px' },
   formTitle: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: '0 0 14px 0' },
   formRow: { display: 'flex', gap: '12px' },
   formHalf: { flex: 1, display: 'flex', flexDirection: 'column' },
   empList: { display: 'flex', flexDirection: 'column', gap: '10px' },
-  empCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '14px 16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', alignItems: 'center', gap: '12px' },
-  empAvatar: { width: '38px', height: '38px', borderRadius: '50%', background: '#0E96CD', color: '#fff', fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  empCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '14px 16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', alignItems: 'center', gap: '12px' },
+  empAvatar: { width: '38px', height: '38px', borderRadius: '50%', background: 'var(--rosso)', color: '#FFF8EA', fontSize: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   empInfo: { flex: 1, minWidth: '80px' },
   empName: { color: 'var(--vn-text)', fontSize: '13px', fontWeight: '700', margin: '0 0 2px 0' },
   empEmail: { color: 'var(--vn-text-sub)', fontSize: '11px', margin: '0 0 4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  roleBadge: { fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: '20px' },
-  deactivateBtn: { padding: '5px 10px', borderRadius: '8px', border: '1.5px solid #ffd0d0', background: 'transparent', color: '#c0392b', fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
+  roleBadge: { fontSize: '11px', fontWeight: '700', padding: '3px 10px', borderRadius: 0 },
+  deactivateBtn: { padding: '5px 10px', borderRadius: 0, border: '1.5px solid #ffd0d0', background: 'transparent', color: '#c0392b', fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
   svcGrid: { display: 'grid', gap: '12px' },
-  svcCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))' },
+  svcCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))' },
   svcName: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: 0, wordBreak: 'break-word' },
   svcDesc: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: '0 0 12px 0', lineHeight: 1.5 },
   svcFooter: { display: 'flex', gap: '8px', flexWrap: 'wrap' },
-  earnPill: { background: '#e8f4ed', color: '#2e7d52', fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '20px' },
-  redeemPill: { background: '#eff6ff', color: ROYAL, fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '20px' },
-  editBtn: { padding: '5px 10px', borderRadius: '8px', border: `1.5px solid ${ROYAL}`, background: 'transparent', color: ROYAL, fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
-  deleteBtn: { padding: '5px 10px', borderRadius: '8px', border: '1.5px solid #ffd0d0', background: 'transparent', color: '#c0392b', fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
-  settingsCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '22px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', marginBottom: '16px' },
+  earnPill: { background: '#e8f4ed', color: '#2e7d52', fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: 0 },
+  redeemPill: { background: '#eff6ff', color: ROYAL, fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: 0 },
+  editBtn: { padding: '5px 10px', borderRadius: 0, border: `1.5px solid ${ROYAL}`, background: 'transparent', color: ROYAL, fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
+  deleteBtn: { padding: '5px 10px', borderRadius: 0, border: '1.5px solid #ffd0d0', background: 'transparent', color: '#c0392b', fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
+  settingsCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '22px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', marginBottom: '16px' },
   settingsCardTitle: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: '0 0 3px' },
   settingsCardSub: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: '0 0 18px', lineHeight: 1.5 },
-  settingsLabel: { color: '#b45309', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '6px' },
-  settingsInput: { width: '100%', padding: '11px 14px', borderRadius: '9px', border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '16px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' },
-  settingsFeedback: { fontSize: '13px', padding: '10px 14px', borderRadius: '8px', margin: '0 0 14px' },
-  settingsDangerBtn: { padding: '10px 20px', borderRadius: '9px', border: '1.5px solid #ffd0d0', background: 'transparent', color: '#c0392b', fontSize: '13px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
+  settingsLabel: { color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '6px' },
+  settingsInput: { width: '100%', padding: '11px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '14px', marginBottom: '16px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' },
+  settingsFeedback: { fontSize: '13px', padding: '10px 14px', borderRadius: 0, margin: '0 0 14px' },
+  settingsDangerBtn: { padding: '10px 20px', borderRadius: 0, border: '1.5px solid #ffd0d0', background: 'transparent', color: '#c0392b', fontSize: '13px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' },
+  visToggleBtn: { padding: '10px 20px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'transparent', color: 'var(--vn-text-sub)', fontSize: '13px', fontWeight: '700', fontFamily: 'inherit' },
+  visToggleBtnActive: { borderColor: ROYAL, background: 'rgba(14,150,205,0.08)', color: ROYAL },
+  reqRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '14px', padding: '14px 0', borderTop: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', flexWrap: 'wrap' },
+  reqHead: { display: 'flex', alignItems: 'flex-start', gap: '12px', flex: 1, minWidth: '200px' },
+  reqCheck: { width: '24px', height: '24px', borderRadius: '50%', background: 'var(--vn-card-border, rgba(16,24,32,0.10))', color: 'var(--vn-text-sub)', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  reqCheckDone: { background: '#2e7d52', color: '#fff' },
+  reqTitle: { color: 'var(--vn-text)', fontSize: '13px', fontWeight: '700', margin: '0 0 3px' },
+  reqDesc: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0, lineHeight: 1.5 },
+  bioTextarea: { width: '100%', padding: '11px 14px', borderRadius: 0, border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.14))', background: 'var(--vn-bg, #FFF8EA)', color: 'var(--vn-text)', fontSize: '13px', marginTop: '10px', marginBottom: '8px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical' },
   sectionSubHead: { color: 'var(--vn-text)', fontSize: '11px', fontWeight: '700', margin: '20px 0 12px', letterSpacing: '1.5px', textTransform: 'uppercase' },
   offerTypePills: { display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' },
-  offerTypePill: { background: 'var(--vn-surface, #F5F5F4)', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', borderRadius: '12px', padding: '12px 14px', flex: 1, minWidth: '140px' },
+  offerTypePill: { background: 'var(--vn-surface, #F5F5F4)', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', borderRadius: 0, padding: '12px 14px', flex: 1, minWidth: '140px' },
   offerTypeIcon: { fontSize: '14px', fontWeight: '800', color: ROYAL },
   offerTypePillLabel: { color: 'var(--vn-text)', fontSize: '12px', fontWeight: '700', margin: 0 },
   offerTypePillDesc: { color: 'var(--vn-text-sub)', fontSize: '11px', margin: '4px 0 0', lineHeight: 1.4 },
-  offerCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', padding: '16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap' },
+  offerCard: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, padding: '16px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap' },
   offerCardLeft: { flex: 1, minWidth: '180px' },
   offerCardActions: { display: 'flex', gap: '6px', flexShrink: 0, flexWrap: 'wrap', alignItems: 'flex-start' },
-  offerTypeBadge: { fontSize: '10px', fontWeight: '700', padding: '3px 10px', borderRadius: '20px' },
+  offerTypeBadge: { fontSize: '10px', fontWeight: '700', padding: '3px 10px', borderRadius: 0 },
   offerName: { color: 'var(--vn-text)', fontSize: '14px', fontWeight: '700', margin: '6px 0 4px' },
   offerMeta: { color: 'var(--vn-text-sub)', fontSize: '12px', margin: 0, lineHeight: 1.5 },
-  offerToggleBtn: { padding: '5px 10px', borderRadius: '8px', border: `1.5px solid ${ROYAL}`, background: 'transparent', color: ROYAL, fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
-  settlementSummary: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '14px', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', flexWrap: 'wrap', overflow: 'hidden' },
+  offerToggleBtn: { padding: '5px 10px', borderRadius: 0, border: `1.5px solid ${ROYAL}`, background: 'transparent', color: ROYAL, fontSize: '11px', fontWeight: '600', cursor: 'pointer' },
+  settlementSummary: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', display: 'flex', flexWrap: 'wrap', overflow: 'hidden' },
   settlementItem: { flex: 1, minWidth: '140px', padding: '20px 16px', textAlign: 'center' },
   settlementItemLabel: { color: 'var(--vn-text-sub)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 8px' },
   settlementItemValue: { fontWeight: '800', fontSize: '1.6rem', margin: 0, lineHeight: 1.1 },
   settlementDivider: { width: '1px', background: 'var(--vn-card-border, rgba(16,24,32,0.10))', flexShrink: 0 },
-  settlementTable: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))' },
+  settlementTable: { background: 'var(--vn-surface, #F5F5F4)', borderRadius: 0, overflow: 'hidden', border: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))' },
   settlementTableHeader: { display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '10px 16px', background: 'var(--vn-card-border, rgba(16,24,32,0.10))', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--vn-text-sub)', gap: '8px' },
   settlementTableRow: { display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', padding: '12px 16px', borderTop: '1px solid var(--vn-card-border, rgba(16,24,32,0.10))', fontSize: '13px', alignItems: 'center', gap: '8px' },
 };

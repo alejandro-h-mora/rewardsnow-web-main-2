@@ -1,20 +1,17 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from './useIsMobile';
-import { useTheme } from './ThemeContext';
 import VeniarNav from './VeniarNav';
 import VeniarFooter from './VeniarFooter';
 
-const LAGOON = '#0E96CD';
-const ORANGE = '#D66024';
-const YELLOW = '#F8C922';
+const LAGOON = 'var(--rosso)';
+const ORANGE = 'var(--rosso)';
 const MUTED  = '#5F6B73';
 
 export default function JoinPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { isDark } = useTheme();
-  const heroBg = isDark ? '#0A1211' : '#1295AA';
+  const heroBg = '#0E0D0C';
 
   useEffect(() => {
     document.title = 'Join Veniar';
@@ -141,7 +138,7 @@ function RoutingCard({ title, description, buttonLabel, buttonStyle, accentColor
       style={{
         background: 'var(--vn-card, #FFFFFF)',
         borderTop: `3px solid ${accentColor}`,
-        borderRadius: '16px',
+        borderRadius: 0,
         padding: '40px 36px',
         textAlign: 'left',
         display: 'flex',
@@ -152,14 +149,14 @@ function RoutingCard({ title, description, buttonLabel, buttonStyle, accentColor
         flex: isMobile ? 'none' : 1,
       }}
     >
-      <div style={{ width: 32, height: 3, background: accentColor, borderRadius: 2, marginBottom: 4, opacity: 0.5 }} />
+      <div style={{ width: 32, height: 3, background: accentColor, borderRadius: 0, marginBottom: 4, opacity: 0.5 }} />
       <p
         style={{
           color: 'var(--vn-text, var(--rn-text))',
           fontSize: '20px',
           fontWeight: '800',
           margin: 0,
-          letterSpacing: '-0.02em',
+          letterSpacing: '0.02em',
         }}
       >
         {title}
@@ -182,7 +179,7 @@ function RoutingCard({ title, description, buttonLabel, buttonStyle, accentColor
             background: accentColor,
             border: 'none',
             color: '#FFFFFF',
-            borderRadius: '9px',
+            borderRadius: 0,
             fontSize: '14px',
             fontWeight: '700',
             cursor: 'pointer',
@@ -200,7 +197,7 @@ function RoutingCard({ title, description, buttonLabel, buttonStyle, accentColor
             background: 'transparent',
             border: '1.5px solid var(--vn-card-border, rgba(16,24,32,0.18))',
             color: 'var(--vn-text, var(--rn-text))',
-            borderRadius: '9px',
+            borderRadius: 0,
             fontSize: '14px',
             fontWeight: '600',
             cursor: 'pointer',
@@ -218,10 +215,10 @@ function RoutingCard({ title, description, buttonLabel, buttonStyle, accentColor
 
 const s = {
   eyebrow: {
-    color: YELLOW,
+    color: 'var(--vn-text)',
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '4px',
+    letterSpacing: '0.24em',
     textTransform: 'uppercase',
     margin: '0 0 20px',
   },
@@ -229,14 +226,16 @@ const s = {
     color: 'var(--vn-text, var(--rn-text))',
     fontWeight: '900',
     lineHeight: 1.06,
-    letterSpacing: '-0.03em',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontFamily: "'Archivo','Inter',sans-serif",
     margin: '0 0 24px',
   },
   goldBar: {
     width: '48px',
-    height: '3px',
-    background: YELLOW,
-    borderRadius: '2px',
+    height: '1px',
+    background: 'var(--vn-line, var(--vn-card-border))',
+    borderRadius: 0,
     margin: '0 auto 28px',
   },
   body: {
